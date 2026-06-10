@@ -66,26 +66,31 @@ export default function Hero() {
       gsap.set(heroMarquees, { opacity: 0 });
       gsap.set(revealSceneRef.current, { opacity: 0, y: 34, scale: 0.98 });
 
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+
       // Scroll effect: Stage 2 - Reveal Scene
       // Keep this as the single scroll-linked animation for the hero to avoid transform conflicts.
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=120%",
-          scrub: 0.8,
+          end: isMobile ? "+=90%" : "+=120%",
+          scrub: isMobile ? 0.55 : 0.8,
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
       });
 
-      // Background shrinks proportionally with rounded corners appearing
+      // Background shrinks into a featured card. On mobile it uses separate X/Y scale
+      // so the final image stays wide enough instead of becoming a thin phone-shaped strip.
       tl.to(
         bgImageRef.current,
         {
-          scale: 0.44,
-          y: "-2vh",
+          scale: isMobile ? 1 : 0.44,
+          scaleX: isMobile ? 0.82 : 0.44,
+          scaleY: isMobile ? 0.38 : 0.44,
+          y: isMobile ? "-8vh" : "-2vh",
           opacity: 0.96,
           ease: "none",
         },
@@ -96,7 +101,7 @@ export default function Hero() {
       tl.to(
         heroContentRef.current,
         {
-          y: "-30vh",
+          y: isMobile ? "-20vh" : "-30vh",
           opacity: 0,
           ease: "none",
         },
@@ -206,40 +211,40 @@ export default function Hero() {
       {/* Reveal scene for the final pinned state */}
       <div
         ref={revealSceneRef}
-        className="absolute inset-0 z-20 flex items-end justify-center px-5 pb-10 pt-28 text-center pointer-events-none md:items-end md:pb-14"
+        className="absolute inset-0 z-20 flex items-end justify-center px-4 pb-8 pt-28 text-center pointer-events-none md:items-end md:px-5 md:pb-14"
       >
-        <div className="w-full max-w-5xl rounded-[2rem] border-2 border-bakeryBerry/20 bg-bakeryBg/80 px-5 py-5 shadow-[12px_12px_0px_0px_rgba(166,28,60,0.16)] backdrop-blur-md md:rounded-[2.5rem] md:px-8 md:py-7">
-          <div className="mb-4 flex flex-wrap items-center justify-center gap-3">
-            <span className="rounded-full border-2 border-bakeryBerry bg-white px-4 py-2 font-body text-[11px] font-black uppercase tracking-[0.28em] text-bakeryBerry shadow-[4px_4px_0px_0px_rgba(166,28,60,0.18)]">
+        <div className="w-full max-w-[22rem] rounded-[1.6rem] border-2 border-bakeryBerry/20 bg-bakeryBg/90 px-4 py-4 shadow-[8px_8px_0px_0px_rgba(166,28,60,0.14)] backdrop-blur-md md:max-w-5xl md:rounded-[2.5rem] md:px-8 md:py-7 md:shadow-[12px_12px_0px_0px_rgba(166,28,60,0.16)]">
+          <div className="mb-3 flex flex-wrap items-center justify-center gap-2 md:mb-4 md:gap-3">
+            <span className="rounded-full border-2 border-bakeryBerry bg-white px-3 py-1.5 font-body text-[9px] font-black uppercase tracking-[0.22em] text-bakeryBerry shadow-[4px_4px_0px_0px_rgba(166,28,60,0.18)] md:px-4 md:py-2 md:text-[11px] md:tracking-[0.28em]">
               Fresh Bento Daily
             </span>
-            <span className="rounded-full bg-bakeryBerry px-4 py-2 font-body text-[11px] font-black uppercase tracking-[0.28em] text-white">
+            <span className="rounded-full bg-bakeryBerry px-3 py-1.5 font-body text-[9px] font-black uppercase tracking-[0.22em] text-white md:px-4 md:py-2 md:text-[11px] md:tracking-[0.28em]">
               Custom Mood Cake
             </span>
           </div>
 
-          <h2 className="mx-auto max-w-4xl font-display text-[clamp(2.3rem,6vw,5.8rem)] font-black uppercase leading-[0.9] tracking-tight text-bakeryBerry">
+          <h2 className="mx-auto max-w-4xl font-display text-[clamp(2.15rem,13vw,4rem)] font-black uppercase leading-[0.88] tracking-tight text-bakeryBerry md:text-[clamp(2.3rem,6vw,5.8rem)]">
             Kue kecil,
             <span className="block text-bakeryText">momen besar.</span>
           </h2>
 
-          <p className="mx-auto mt-4 max-w-2xl font-body text-sm font-semibold leading-relaxed text-bakeryText/80 md:text-base">
+          <p className="mx-auto mt-3 max-w-2xl font-body text-[13px] font-semibold leading-relaxed text-bakeryText/80 md:mt-4 md:text-base">
             Pilih rasa, warna, dan tulisan yang paling cocok buat mood kamu —
             dari kejutan manis sampai hadiah personal yang terasa niat.
           </p>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 pointer-events-auto">
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-2 pointer-events-auto md:mt-6 md:gap-3">
             <a
               href="#catalog"
               data-cursor-hover
-              className="rounded-full border-2 border-bakeryText bg-bakeryBerry px-6 py-3 font-display text-sm font-black uppercase tracking-[0.18em] text-white shadow-[6px_6px_0px_0px_rgba(74,62,61,1)] transition-transform hover:-translate-y-1 md:px-8 md:py-4"
+              className="rounded-full border-2 border-bakeryText bg-bakeryBerry px-4 py-2.5 font-display text-[11px] font-black uppercase tracking-[0.14em] text-white shadow-[4px_4px_0px_0px_rgba(74,62,61,1)] transition-transform hover:-translate-y-1 md:px-8 md:py-4 md:text-sm md:tracking-[0.18em] md:shadow-[6px_6px_0px_0px_rgba(74,62,61,1)]"
             >
               Lihat Catalog
             </a>
             <Link
               to="/contact"
               data-cursor-hover
-              className="rounded-full border-2 border-bakeryText bg-white px-6 py-3 font-display text-sm font-black uppercase tracking-[0.18em] text-bakeryBerry shadow-[6px_6px_0px_0px_rgba(74,62,61,1)] transition-transform hover:-translate-y-1 md:px-8 md:py-4"
+              className="rounded-full border-2 border-bakeryText bg-white px-4 py-2.5 font-display text-[11px] font-black uppercase tracking-[0.14em] text-bakeryBerry shadow-[4px_4px_0px_0px_rgba(74,62,61,1)] transition-transform hover:-translate-y-1 md:px-8 md:py-4 md:text-sm md:tracking-[0.18em] md:shadow-[6px_6px_0px_0px_rgba(74,62,61,1)]"
             >
               Order Custom
             </Link>
