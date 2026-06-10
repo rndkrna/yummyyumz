@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    html,
+    body {
+        @apply bg-bakeryBg text-bakeryText;
+        overflow-x: hidden;
+    }
+
+    * {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+}
+
+@layer utilities {
+    /* Smooth hardware acceleration */
+    .gpu-accelerate {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+        perspective: 1000px;
+        will-change: transform;
+    }
+
+    /* Better image rendering */
+    img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+
+    /* Floating animation */
+    @keyframes float {
+        0%,
+        100% {
+            transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+            transform: translateY(-20px) rotate(180deg);
+        }
+    }
+
+    .animate-float {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes pageTransitionBar {
+        0% {
+            transform: scaleX(0);
+            transform-origin: left;
+        }
+        45% {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        55% {
+            transform: scaleX(1);
+            transform-origin: right;
+        }
+        100% {
+            transform: scaleX(0);
+            transform-origin: right;
+        }
+    }
+
+    /* Glow effect */
+    @keyframes glow {
+        0%,
+        100% {
+            box-shadow:
+                0 0 5px rgba(166, 28, 60, 0.3),
+                0 0 10px rgba(166, 28, 60, 0.2),
+                0 0 15px rgba(166, 28, 60, 0.1);
+        }
+        50% {
+            box-shadow:
+                0 0 10px rgba(166, 28, 60, 0.5),
+                0 0 20px rgba(166, 28, 60, 0.4),
+                0 0 30px rgba(166, 28, 60, 0.3);
+        }
+    }
+
+    .animate-glow {
+        animation: glow 2s ease-in-out infinite;
+    }
+
+    /* Shimmer effect */
+    @keyframes shimmer {
+        0% {
+            background-position: -1000px 0;
+        }
+        100% {
+            background-position: 1000px 0;
+        }
+    }
+
+    .shimmer {
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.3) 50%,
+            transparent 100%
+        );
+        background-size: 1000px 100%;
+        animation: shimmer 3s infinite;
+    }
+}

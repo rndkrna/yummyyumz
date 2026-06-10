@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audit Program</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --ok: #22c55e;
+      --warn: #f59e0b;
+      --high: #ef4444;
+      --border: #334155;
+      --accent: #60a5fa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Arial, sans-serif;
+      background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 40px 20px 72px;
+    }
+    h1, h2, h3 { margin: 0 0 12px; }
+    h1 { font-size: 34px; }
+    h2 {
+      font-size: 22px;
+      margin-top: 28px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+    p { color: var(--text); margin: 10px 0; }
+    .muted { color: var(--muted); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin: 22px 0;
+    }
+    .card, .panel {
+      background: rgba(17, 24, 39, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.18);
+    }
+    .card strong {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .value { font-size: 24px; font-weight: 700; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+    th, td {
+      text-align: left;
+      padding: 14px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    th {
+      background: var(--panel-2);
+      font-size: 13px;
+      color: #cbd5e1;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    tr:nth-child(even) td { background: rgba(15, 23, 42, 0.4); }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+    .high { background: rgba(239,68,68,.15); color: #fca5a5; }
+    .medium { background: rgba(245,158,11,.14); color: #fcd34d; }
+    .low { background: rgba(96,165,250,.14); color: #93c5fd; }
+    code {
+      background: rgba(148,163,184,.12);
+      border: 1px solid rgba(148,163,184,.18);
+      color: #dbeafe;
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-family: Consolas, monospace;
+      font-size: .95em;
+    }
+    ul { padding-left: 18px; }
+    li { margin: 8px 0; }
+    .footer {
+      margin-top: 30px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .accent { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Analisa dan audit program</h1>
+    <p class="muted">Dokumen ini telah diperbarui setelah perbaikan teknis pada dua aplikasi frontend di folder ini: <code>landing</code> dan <code>dashboard</code>. Verifikasi dilakukan lewat pembacaan kode, penyesuaian implementasi, serta pengujian <code>test</code>, <code>lint</code>, dan <code>build</code>.</p>
+
+    <div class="grid">
+      <div class="card">
+        <strong>Status build</strong>
+        <div class="value" style="color: var(--ok)">2/2 lolos</div>
+      </div>
+      <div class="card">
+        <strong>Status lint</strong>
+        <div class="value" style="color: var(--ok)">2/2 lolos</div>
+      </div>
+      <div class="card">
+        <strong>Status test</strong>
+        <div class="value" style="color: var(--ok)">2/2 lolos</div>
+      </div>
+      <div class="card">
+        <strong>Kesimpulan</strong>
+        <div class="value">Fondasi sudah jauh lebih rapi</div>
+      </div>
+    </div>
+
+    <h2>Ringkasan</h2>
+    <div class="panel">
+      <p><code>landing</code> kini memiliki struktur context yang benar untuk smooth scroll, cleanup animasi yang aman saat unmount, sumber data lokal yang lebih jelas, dan form yang benar-benar menghasilkan aksi nyata melalui tautan WhatsApp terformat.</p>
+      <p><code>dashboard</code> tidak lagi berupa template Vite. Isi aplikasi sudah diganti menjadi dashboard operasional statis yang lebih representatif, jujur terhadap kondisi data yang belum terhubung ke backend, dan lebih siap dikembangkan ke tahap berikutnya.</p>
+    </div>
+
+    <h2>Perbaikan yang selesai</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Area</th>
+          <th>Perbaikan</th>
+          <th>Hasil</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag high">Selesai</span></td>
+          <td><code>landing</code> / context scroll</td>
+          <td><code>Navbar</code> dipindah agar benar-benar berada di dalam provider <code>SmoothScroll</code>.</td>
+          <td>Reset scroll saat navigasi kini punya akses ke instance Lenis yang benar.</td>
+        </tr>
+        <tr>
+          <td><span class="tag high">Selesai</span></td>
+          <td><code>landing</code> / cleanup animasi</td>
+          <td>Callback <code>gsap.ticker</code> kini disimpan dan dibersihkan dengan referensi yang sama saat unmount.</td>
+          <td>Risiko callback tertinggal dan perilaku scroll ganda berkurang.</td>
+        </tr>
+        <tr>
+          <td><span class="tag medium">Selesai</span></td>
+          <td><code>landing</code> / CTA & form</td>
+          <td>Form kontak dan form footer kini membentuk tautan WhatsApp dari input pengguna, lengkap dengan validasi minimum.</td>
+          <td>CTA tidak lagi menyesatkan sebagai elemen presentasional kosong.</td>
+        </tr>
+        <tr>
+          <td><span class="tag medium">Selesai</span></td>
+          <td><code>landing</code> / struktur data</td>
+          <td>Data kontak, jam buka, dan katalog utama dipusatkan ke <code>src/data/siteData.js</code>.</td>
+          <td>Perubahan konten dasar jadi lebih mudah dipelihara.</td>
+        </tr>
+        <tr>
+          <td><span class="tag medium">Selesai</span></td>
+          <td><code>dashboard</code> / isi produk</td>
+          <td>Template Vite diganti dengan dashboard operasional statis berisi ringkasan, panel status, daftar pesanan, dan aktivitas tim.</td>
+          <td>Tampilan sekarang lebih relevan untuk kebutuhan produk.</td>
+        </tr>
+        <tr>
+          <td><span class="tag low">Selesai</span></td>
+          <td>Dependensi & dokumentasi</td>
+          <td>Dependensi tak terpakai dibersihkan dan README template diganti dengan dokumentasi proyek yang relevan.</td>
+          <td>Folder proyek lebih konsisten dan tidak lagi terasa seperti scaffold awal.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Hasil verifikasi</h2>
+    <div class="panel">
+      <ul>
+        <li><span class="accent">Test</span>: <code>landing</code> lulus untuk verifikasi context <code>SmoothScroll</code>, cleanup ticker, dan generator tautan WhatsApp.</li>
+        <li><span class="accent">Test</span>: <code>dashboard</code> lulus untuk verifikasi bahwa template Vite sudah tergantikan oleh dashboard operasional.</li>
+        <li><span class="accent">Lint</span>: <code>landing</code> dan <code>dashboard</code> sama-sama lolos tanpa error.</li>
+        <li><span class="accent">Build</span>: <code>landing</code> dan <code>dashboard</code> sama-sama lolos build produksi.</li>
+      </ul>
+    </div>
+
+    <h2>Sisa catatan</h2>
+    <div class="panel">
+      <ol>
+        <li>Data pada <code>dashboard</code> masih statis; integrasi ke sumber data nyata belum dikerjakan.</li>
+        <li>Beberapa gambar di <code>landing</code> masih mengambil dari URL eksternal sehingga belum ideal untuk kontrol aset jangka panjang.</li>
+        <li>Nomor WhatsApp dan identitas bisnis masih berupa data demo, jadi perlu disesuaikan saat masuk tahap produksi.</li>
+      </ol>
+    </div>
+
+    <div class="footer">
+      Secara teknis, kedua proyek kini berada pada kondisi yang jauh lebih sehat dibanding audit awal. Langkah berikutnya yang paling masuk akal adalah menghubungkan data nyata, mengganti aset eksternal, lalu melakukan review visual di browser.
+    </div>
+  </div>
+</body>
+</html>
