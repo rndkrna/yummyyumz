@@ -2,7 +2,8 @@ import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Footer from "../components/sections/Footer";
-import { catalogProducts } from "../data/siteData";
+import { usePublicProducts } from "../hooks/usePublicData";
+import { createPublicOrder } from "../services/publicData";
 import { buildProductWhatsAppLink } from "../utils/contact";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -11,6 +12,23 @@ export default function FullCatalog() {
   const containerRef = useRef(null);
   const headerRef = useRef(null);
   const gridRef = useRef(null);
+  const { catalog: catalogProducts, source } = usePublicProducts();
+
+  const handleCatalogOrder = async (event, product) => {
+    event.preventDefault();
+    await createPublicOrder({
+      name: "Pengunjung katalog",
+      product: product.name,
+      price: product.price,
+      desc: product.desc,
+      message: `Klik pesan produk dari katalog untuk ${product.name}.`,
+    });
+    window.open(
+      buildProductWhatsAppLink(product),
+      "_blank",
+      "noopener,noreferrer",
+    );
+  };
 
   useLayoutEffect(() => {
     let ctx = gsap.context(() => {
@@ -55,7 +73,8 @@ export default function FullCatalog() {
             </h1>
           </div>
           <span className="hidden md:inline-block border-2 border-bakeryText rounded-full px-6 py-2 font-display font-bold text-bakeryText uppercase tracking-widest text-sm mb-4">
-            {catalogProducts.length} Products
+            {catalogProducts.length} Products ·{" "}
+            {source === "supabase" ? "Live" : "Demo"}
           </span>
         </div>
 
@@ -63,6 +82,18 @@ export default function FullCatalog() {
           ref={gridRef}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12"
         >
+          {!catalogProducts.length ? (
+            <div className="rounded-[2rem] border-4 border-dashed border-bakeryText bg-white p-8 font-body text-bakeryText shadow-[10px_10px_0px_0px_rgba(74,62,61,1)] md:col-span-2 lg:col-span-3">
+              <h2 className="font-display text-3xl font-bold uppercase text-bakeryBerry">
+                Belum ada produk
+              </h2>
+              <p className="mt-3 max-w-2xl text-base font-medium leading-relaxed">
+                Tambahkan menu dari dashboard admin. Jika Anda memakai Supabase,
+                pastikan landing dan dashboard memakai project Supabase yang
+                sama.
+              </p>
+            </div>
+          ) : null}
           {catalogProducts.map((product) => (
             <div
               key={product.id}
@@ -93,10 +124,11 @@ export default function FullCatalog() {
                 href={buildProductWhatsAppLink(product)}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`Order ${product.name} via WhatsApp`}
+                aria-label={`Pesan produk ${product.name}`}
+                onClick={(event) => handleCatalogOrder(event, product)}
                 className="mt-6 inline-flex items-center justify-center w-full bg-bakeryBerry text-white font-display font-bold uppercase tracking-widest py-4 rounded-xl hover:bg-bakeryText transition-colors shadow-[4px_4px_0px_0px_rgba(74,62,61,1)]"
               >
-                Order via WhatsApp →
+                Pesan Produk →
               </a>
             </div>
           ))}

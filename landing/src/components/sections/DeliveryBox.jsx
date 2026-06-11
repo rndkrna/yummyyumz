@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { momentSlides } from "../../data/siteData";
+import { usePublicMoments } from "../../hooks/usePublicData";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -23,20 +23,19 @@ export default function DeliveryBox() {
   const textRef = useRef(null);
   const imageRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
+  const { moments } = usePublicMoments();
 
   useEffect(() => {
-    if (!momentSlides.length) {
+    if (!moments.length) {
       return undefined;
     }
 
     const intervalId = window.setInterval(() => {
-      setActiveIndex(
-        (currentIndex) => (currentIndex + 1) % momentSlides.length,
-      );
+      setActiveIndex((currentIndex) => (currentIndex + 1) % moments.length);
     }, 4500);
 
     return () => window.clearInterval(intervalId);
-  }, []);
+  }, [moments.length]);
 
   useLayoutEffect(() => {
     let ctx = gsap.context(() => {
@@ -70,16 +69,16 @@ export default function DeliveryBox() {
     return () => ctx.revert();
   }, []);
 
-  const activeSlide = momentSlides[activeIndex] ?? null;
+  const activeSlide = moments[activeIndex] ?? null;
 
   const handlePrev = () => {
     setActiveIndex((currentIndex) =>
-      currentIndex === 0 ? momentSlides.length - 1 : currentIndex - 1,
+      currentIndex === 0 ? moments.length - 1 : currentIndex - 1,
     );
   };
 
   const handleNext = () => {
-    setActiveIndex((currentIndex) => (currentIndex + 1) % momentSlides.length);
+    setActiveIndex((currentIndex) => (currentIndex + 1) % moments.length);
   };
 
   return (
@@ -105,13 +104,15 @@ export default function DeliveryBox() {
             ✨ Moment ✨
           </span>
           <h2 className="font-display font-extrabold text-bakeryBerry text-[clamp(2.8rem,8vw,7rem)] leading-[0.95] md:leading-[0.85] mb-8 md:mb-10 uppercase tracking-tighter drop-shadow-md">
-            Bukan Cuma
+            FIRST IMPRESSION
             <br />
-            Kue Biasa.
+            STARTS HERE
           </h2>
           <p className="font-body text-lg md:text-2xl leading-relaxed mb-12 md:mb-16 max-w-lg mx-auto md:mx-0 font-medium text-bakeryBerry">
-            Setiap bento cake hadir untuk ikut masuk ke momen yang ingin Anda
-            rayakan
+            Setiap detail dirancang untuk menciptakan kesan pertama yang tak
+            terlupakan. Mulai dari kemasan premium, penyajian yang rapi, hingga
+            sentuhan personal yang membuat setiap cake bento terasa lebih
+            spesial sejak pertama kali diterima.
           </p>
 
           <div className="grid grid-cols-2 gap-6 md:gap-10">
@@ -151,7 +152,7 @@ export default function DeliveryBox() {
                     </span>
                   ) : null}
                   <span className="font-body text-xs font-bold uppercase tracking-[0.3em] text-white/90 bg-white/10 px-4 py-2 rounded-full">
-                    {activeIndex + 1} / {momentSlides.length}
+                    {activeIndex + 1} / {moments.length}
                   </span>
                 </div>
                 <h3 className="font-display text-4xl md:text-5xl font-bold uppercase tracking-tight mb-3">
@@ -172,7 +173,7 @@ export default function DeliveryBox() {
 
           <div className="absolute inset-x-0 bottom-8 z-20 flex items-center justify-between px-6 md:px-8">
             <div className="flex items-center gap-3">
-              {momentSlides.map((slide, index) => (
+              {moments.map((slide, index) => (
                 <button
                   key={slide.id}
                   type="button"

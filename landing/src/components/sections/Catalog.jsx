@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "react-router-dom";
-import { featuredProducts } from "../../data/siteData";
+import { usePublicProducts } from "../../hooks/usePublicData";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -10,6 +10,8 @@ export default function Catalog() {
   const containerRef = useRef(null);
   const titleRef = useRef(null);
   const cardsRef = useRef([]);
+  const { featured: featuredProducts } = usePublicProducts();
+  const visibleProducts = featuredProducts.slice(0, 3);
 
   useLayoutEffect(() => {
     let ctx = gsap.context(() => {
@@ -90,13 +92,24 @@ export default function Catalog() {
               textShadow: "4px 4px 0 #4A3E3D",
             }}
           >
-            RASA FAVORIT
+            KUE FAVORIT
           </h2>
         </div>
 
         {/* Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-12 md:gap-y-16 mt-12 md:mt-16">
-          {featuredProducts.map((prod) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-12 md:gap-y-16 mt-12 md:mt-16">
+          {!visibleProducts.length ? (
+            <div className="rounded-[2rem] border-4 border-dashed border-bakeryText bg-bakeryBg p-8 text-center font-body text-bakeryText shadow-[8px_8px_0px_rgba(74,62,61,1)] sm:col-span-2 lg:col-span-3">
+              <h3 className="font-display text-3xl font-bold uppercase text-bakeryBerry">
+                Belum ada kue favorit
+              </h3>
+              <p className="mx-auto mt-3 max-w-xl text-sm font-medium leading-relaxed">
+                Tambahkan maksimal 3 produk unggulan dari dashboard agar tampil
+                di halaman utama.
+              </p>
+            </div>
+          ) : null}
+          {visibleProducts.map((prod) => (
             <div
               key={prod.id}
               ref={addToRefs}

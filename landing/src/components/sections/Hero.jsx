@@ -9,7 +9,7 @@ export default function Hero() {
   const containerRef = useRef(null);
   const titleLeftRef = useRef(null);
   const textRightRef = useRef(null);
-  const buttonRef = useRef(null);
+
   const bgImageRef = useRef(null);
   const heroContentRef = useRef(null);
   const revealSceneRef = useRef(null);
@@ -40,12 +40,6 @@ export default function Hero() {
         textRightRef.current,
         { opacity: 0, x: 40, y: 15 },
         { opacity: 1, x: 0, y: 0, duration: 1.4, delay: 1.2, ease: "expo.out" },
-      );
-
-      gsap.fromTo(
-        buttonRef.current,
-        { scale: 0.8, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 1.5, delay: 1.4, ease: "expo.out" },
       );
 
       const heroMarquees = gsap.utils.toArray(".hero-marquee");
@@ -285,41 +279,12 @@ export default function Hero() {
             ref={textRightRef}
             className="font-body text-white text-sm md:text-base leading-relaxed mb-8 max-w-sm drop-shadow-md font-medium"
           >
-            Nggak, girl, aku gak suka kue manis-manis yang biasa aja... Waktu
-            kecil, aku suka kue – tentu saja – tapi aku jarang banget yang
-            bener-bener suka... Tapi yang warna cantik itu apa? yummy.yumz? Aku
-            mau yang desain kuning cerah itu, apa itu? Cheese & Berry? Oh, ini
-            unik! Dan apa rasa kejunya kerasa banget? Digigit... mantap! Boleh
-            bawa pulang yang desain pink ini juga nggak?
+            Menghadirkan seni dekorasi bento cake premium yang memadukan
+            keindahan visual dan kelezatan rasa. Setiap kreasi dibuat secara
+            detail dengan bahan berkualitas tinggi, menghasilkan cita rasa yang
+            seimbang dan tidak terlalu manis. Temukan katalog desain eksklusif
+            kami dan pesan bento cake Anda sekarang.
           </p>
-
-          <div className="flex items-center space-x-4 md:space-x-6 justify-center md:justify-start">
-            <a
-              ref={buttonRef}
-              href="#catalog"
-              data-cursor-hover
-              className="relative w-24 h-24 flex items-center justify-center group"
-            >
-              <svg
-                viewBox="0 0 100 100"
-                className="absolute inset-0 w-full h-full text-white/60 group-hover:text-white transition-colors duration-300 transform group-hover:scale-105"
-              >
-                <path
-                  fill="transparent"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  d="M 50 5 C 60 5, 65 15, 75 15 C 85 15, 90 25, 95 35 C 95 45, 85 50, 85 60 C 85 70, 95 75, 95 85 C 90 95, 80 95, 70 95 C 60 95, 55 85, 45 85 C 35 85, 30 95, 20 95 C 10 95, 5 85, 5 75 C 5 65, 15 60, 15 50 C 15 40, 5 35, 5 25 C 10 15, 20 15, 30 15 C 40 15, 45 5, 50 5 Z"
-                />
-              </svg>
-              <span className="text-white font-light text-2xl relative z-10 transition-transform group-hover:translate-x-2">
-                →
-              </span>
-            </a>
-
-            <span className="font-display font-bold text-white uppercase tracking-widest text-sm drop-shadow-md">
-              CATALOG
-            </span>
-          </div>
         </div>
       </div>
     </section>

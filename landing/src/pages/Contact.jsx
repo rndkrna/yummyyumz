@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Footer from "../components/sections/Footer";
 import { businessInfo } from "../data/siteData";
+import { createPublicOrder } from "../services/publicData";
 import { buildWhatsAppOrderLink } from "../utils/contact";
 
 export default function Contact() {
@@ -26,7 +27,7 @@ export default function Contact() {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const result = buildWhatsAppOrderLink(formValues);
@@ -36,8 +37,12 @@ export default function Contact() {
       return;
     }
 
+    const orderResult = await createPublicOrder(formValues);
+
     setFormStatus(
-      "WhatsApp akan dibuka di tab baru dengan pesan yang sudah terisi.",
+      orderResult.source === "supabase"
+        ? "Order tercatat di dashboard admin. WhatsApp dibuka untuk konfirmasi ke admin."
+        : "Pesanan siap dikirim. WhatsApp dibuka untuk konfirmasi ke admin.",
     );
     window.open(result.url, "_blank", "noopener,noreferrer");
   };
@@ -233,7 +238,7 @@ export default function Contact() {
                     type="submit"
                     className="rounded-full border-2 border-bakeryText bg-bakeryBerry px-6 py-3 font-display text-sm font-bold uppercase tracking-[0.14em] text-white shadow-[5px_5px_0px_0px_rgba(74,62,61,1)] transition-transform hover:-translate-y-1 md:px-8 md:py-4 md:text-lg md:tracking-[0.18em]"
                   >
-                    Buka WhatsApp
+                    Kirim Pesanan
                   </button>
                   <a
                     href={businessInfo.instagramUrl}
