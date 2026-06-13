@@ -79,7 +79,6 @@ textarea {
 
 .login-card button,
 .inline-form button,
-.reset-floating,
 .logout-floating {
     border: 0;
     border-radius: 14px;
@@ -874,7 +873,6 @@ textarea {
     font-weight: 700;
 }
 
-.reset-floating,
 .logout-floating {
     position: fixed;
     right: 28px;
@@ -882,10 +880,6 @@ textarea {
     z-index: 20;
     background: rgba(92, 75, 57, 0.86);
     padding: 10px 14px;
-}
-
-.logout-floating {
-    right: 130px;
 }
 
 @media (max-width: 1100px) {

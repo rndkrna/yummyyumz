@@ -1,10 +1,9 @@
 import { useLayoutEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Footer from "../components/sections/Footer";
 import { usePublicProducts } from "../hooks/usePublicData";
-import { createPublicOrder } from "../services/publicData";
-import { buildProductWhatsAppLink } from "../utils/contact";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,20 +13,13 @@ export default function FullCatalog() {
   const gridRef = useRef(null);
   const { catalog: catalogProducts, source } = usePublicProducts();
 
-  const handleCatalogOrder = async (event, product) => {
-    event.preventDefault();
-    await createPublicOrder({
-      name: "Pengunjung katalog",
-      product: product.name,
-      price: product.price,
-      desc: product.desc,
-      message: `Klik pesan produk dari katalog untuk ${product.name}.`,
-    });
-    window.open(
-      buildProductWhatsAppLink(product),
-      "_blank",
-      "noopener,noreferrer",
-    );
+  const buildOrderFormUrl = (product) => {
+    const params = new URLSearchParams({ product: product.name });
+
+    if (product.price) params.set("price", product.price);
+    if (product.desc) params.set("desc", product.desc);
+
+    return `/contact?${params.toString()}`;
   };
 
   useLayoutEffect(() => {
@@ -120,16 +112,13 @@ export default function FullCatalog() {
                   {product.price}
                 </span>
               </div>
-              <a
-                href={buildProductWhatsAppLink(product)}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to={buildOrderFormUrl(product)}
                 aria-label={`Pesan produk ${product.name}`}
-                onClick={(event) => handleCatalogOrder(event, product)}
                 className="mt-6 inline-flex items-center justify-center w-full bg-bakeryBerry text-white font-display font-bold uppercase tracking-widest py-4 rounded-xl hover:bg-bakeryText transition-colors shadow-[4px_4px_0px_0px_rgba(74,62,61,1)]"
               >
                 Pesan Produk →
-              </a>
+              </Link>
             </div>
           ))}
         </div>

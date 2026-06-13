@@ -196,17 +196,27 @@ export default function Catalog() {
                   {/* Gradient overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-                  {/* Stick / Base placeholder */}
-                  <div className="absolute bottom-[-10%] w-6 h-32 bg-[#e0b484] rounded-full border-2 border-bakeryText z-0 transform group-hover:scale-110 transition-transform duration-700"></div>
+                  {prod.img ? (
+                    <img
+                      src={prod.img}
+                      alt={prod.title || prod.name}
+                      className="absolute inset-0 h-full w-full object-cover z-10 transform group-hover:scale-110 transition-transform duration-700 ease-out"
+                    />
+                  ) : (
+                    <>
+                      {/* Stick / Base placeholder */}
+                      <div className="absolute bottom-[-10%] w-6 h-32 bg-[#e0b484] rounded-full border-2 border-bakeryText z-0 transform group-hover:scale-110 transition-transform duration-700"></div>
 
-                  {/* Cake body placeholder */}
-                  <div className="w-3/5 h-3/5 bg-bakeryBerry rounded-t-full rounded-b-md border-2 border-bakeryText z-10 flex items-center justify-center transform group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-700 ease-out relative overflow-hidden">
-                    {/* Inner glow */}
-                    <div className="absolute inset-0 bg-white/20 rounded-t-full rounded-b-md animate-glow"></div>
-                    <span className="text-4xl group-hover:rotate-[360deg] group-hover:scale-125 transition-all duration-700 relative z-10">
-                      🎂
-                    </span>
-                  </div>
+                      {/* Cake body placeholder */}
+                      <div className="w-3/5 h-3/5 bg-bakeryBerry rounded-t-full rounded-b-md border-2 border-bakeryText z-10 flex items-center justify-center transform group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-700 ease-out relative overflow-hidden">
+                        {/* Inner glow */}
+                        <div className="absolute inset-0 bg-white/20 rounded-t-full rounded-b-md animate-glow"></div>
+                        <span className="text-4xl group-hover:rotate-[360deg] group-hover:scale-125 transition-all duration-700 relative z-10">
+                          🎂
+                        </span>
+                      </div>
+                    </>
+                  )}
 
                   {/* Subtle shadow */}
                   <div className="absolute bottom-4 w-1/2 h-4 bg-black/20 rounded-[100%] blur-md group-hover:w-3/5 transition-all duration-500"></div>

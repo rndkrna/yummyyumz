@@ -1,21 +1,33 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Footer from "../components/sections/Footer";
 import { businessInfo } from "../data/siteData";
 import { createPublicOrder } from "../services/publicData";
 import { buildWhatsAppOrderLink } from "../utils/contact";
 
 export default function Contact() {
+  const [searchParams] = useSearchParams();
+  const selectedProduct = searchParams.get("product") || "";
+  const selectedPrice = searchParams.get("price") || "";
+  const selectedDesc = searchParams.get("desc") || "";
+  const initialMessage = [
+    selectedPrice ? `Harga katalog: ${selectedPrice}` : null,
+    selectedDesc ? `Deskripsi produk: ${selectedDesc}` : null,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
   const [formValues, setFormValues] = useState({
     name: "",
     phone: "",
     email: "",
-    product: "",
+    product: selectedProduct,
     flavor: "",
     eventDate: "",
     deliveryMethod: "Pickup",
     theme: "",
     referenceUrl: "",
-    message: "",
+    message: initialMessage,
   });
   const [formStatus, setFormStatus] = useState("");
 
@@ -66,6 +78,11 @@ export default function Contact() {
                 inginkan. Setelah form diisi, kami siapkan pesan WhatsApp agar
                 proses order lebih cepat.
               </p>
+              {selectedProduct ? (
+                <p className="mt-4 inline-flex rounded-full border-2 border-bakeryText bg-[#E7F2B7] px-4 py-2 font-body text-sm font-bold text-bakeryBerry shadow-[4px_4px_0px_0px_rgba(74,62,61,1)]">
+                  Produk dipilih: {selectedProduct}
+                </p>
+              ) : null}
 
               <div className="mt-8 min-w-0 rounded-[1.5rem] border-3 border-bakeryText bg-[#E7F2B7] p-5 text-bakeryText md:mt-10 md:rounded-[2rem] md:border-4 md:p-6">
                 <h2 className="font-display text-2xl font-bold uppercase text-bakeryBerry">

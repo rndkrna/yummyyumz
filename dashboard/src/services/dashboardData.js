@@ -12,7 +12,7 @@ export const dashboardRemoteEnabled = isSupabaseConfigured;
 
 const requireSupabase = () => {
   if (!supabase) {
-    throw new Error("Supabase belum dikonfigurasi.");
+    throw new Error("Database belum dikonfigurasi.");
   }
 };
 

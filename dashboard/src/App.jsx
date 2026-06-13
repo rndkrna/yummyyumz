@@ -55,8 +55,10 @@ const formatCurrency = (value) =>
     maximumFractionDigits: 0,
   }).format(Number(value) || 0);
 
-const parseAmount = (value) =>
-  Number(String(value).replace(/[^0-9]/g, "")) || 0;
+const parseAmount = (value) => {
+  const match = String(value).match(/\d[\d\.]*/);
+  return match ? Number(match[0].replace(/[^0-9]/g, "")) || 0 : 0;
+};
 const getNumericPrice = (price) => parseAmount(price);
 
 const formatShortDate = (value = new Date()) =>
@@ -69,7 +71,9 @@ const formatShortDate = (value = new Date()) =>
 const toMenuItem = (item) => ({
   id: item.id,
   name: item.name,
-  price: formatCurrency(item.price),
+  price: typeof item.price === "number" || (typeof item.price === "string" && /^\d+$/.test(item.price))
+    ? formatCurrency(item.price)
+    : item.price,
   desc: item.description || "",
   img: item.image_url || "",
   isFeatured: item.is_featured,
@@ -159,7 +163,9 @@ function App() {
     date: "",
   });
   const [remoteStatus, setRemoteStatus] = useState(
-    dashboardRemoteEnabled ? "Menghubungkan Supabase..." : "Mode demo lokal",
+    dashboardRemoteEnabled
+      ? "Menghubungkan database..."
+      : "Database belum terhubung",
   );
 
   useEffect(() => {
@@ -174,11 +180,11 @@ function App() {
         setMomentItems(data.moments.map(toMomentItem));
         setOrders(data.orders.map(toOrderItem));
         setFinanceRecords(data.finances.map(toFinanceItem));
-        setRemoteStatus("Tersinkron dengan Supabase");
+        setRemoteStatus("Data tersinkron");
       })
       .catch((error) => {
         if (!isMounted) return;
-        setRemoteStatus(`Gagal sync Supabase: ${error.message}`);
+        setRemoteStatus(`Gagal sinkronisasi: ${error.message}`);
       });
 
     return () => {
@@ -202,7 +208,7 @@ function App() {
             }
             return [incomingOrder, ...current];
           });
-          setRemoteStatus("Order baru masuk dari landing");
+          setRemoteStatus("Order baru masuk");
         },
       )
       .subscribe();
@@ -404,18 +410,6 @@ function App() {
     setLoginError("");
   };
 
-  const resetAllData = () => {
-    setMenuItems(initialMenuItems);
-    setMomentItems(initialMomentItems);
-    setOrders(initialOrders);
-    setFinanceRecords(initialFinanceRecords);
-    setRemoteStatus(
-      dashboardRemoteEnabled
-        ? "Reset tampilan lokal. Data Supabase tidak dihapus."
-        : "Mode demo lokal",
-    );
-  };
-
   const addOrder = async (event) => {
     event.preventDefault();
     const nextOrder = {
@@ -441,7 +435,7 @@ function App() {
           note: nextOrder.note,
         });
         setOrders((current) => [toOrderItem(savedOrder), ...current]);
-        setRemoteStatus("Order tersimpan ke Supabase");
+        setRemoteStatus("Order tersimpan");
       } catch (error) {
         setRemoteStatus(`Gagal simpan order: ${error.message}`);
         return;
@@ -487,7 +481,7 @@ function App() {
           toFinanceItem(savedRecord),
           ...current,
         ]);
-        setRemoteStatus("Transaksi tersimpan ke Supabase");
+        setRemoteStatus("Transaksi tersimpan");
       } catch (error) {
         setRemoteStatus(`Gagal simpan transaksi: ${error.message}`);
         return;
@@ -544,22 +538,20 @@ function App() {
         const savedProduct = await insertProduct({
           name: nextMenu.name,
           description: nextMenu.desc,
-          price: parseAmount(nextMenu.price),
+          price: nextMenu.price,
           image_url: nextMenu.img || null,
           is_featured: true,
           is_available: true,
         });
         setMenuItems((current) => [toMenuItem(savedProduct), ...current]);
-        setRemoteStatus("Menu tersimpan ke Supabase dan landing");
+        setRemoteStatus("Menu tersimpan dan siap tampil");
       } catch (error) {
         setRemoteStatus(`Gagal simpan menu: ${error.message}`);
         return;
       }
     } else {
       setMenuItems((current) => [nextMenu, ...current]);
-      setRemoteStatus(
-        "Menu tersimpan lokal. Hubungkan Supabase agar muncul di landing.",
-      );
+      setRemoteStatus("Menu tersimpan di perangkat ini.");
     }
 
     setMenuForm({ name: "", price: "", desc: "", img: "" });
@@ -615,7 +607,7 @@ function App() {
           is_published: true,
         });
         setMomentItems((current) => [toMomentItem(savedMoment), ...current]);
-        setRemoteStatus("Moment tersimpan ke Supabase dan landing");
+        setRemoteStatus("Moment tersimpan dan siap tampil");
       } catch (error) {
         setRemoteStatus(`Gagal simpan moment: ${error.message}`);
         return;
@@ -640,7 +632,7 @@ function App() {
     ["orders", "▣", "Orderan Masuk"],
     ["finance", "▤", "Pembukuan"],
     ["menu", "♨", "Menu"],
-    ["moment", "▧", "Moment Landing"],
+    ["moment", "▧", "Moment Publik"],
     ["reports", "▥", "Laporan"],
   ];
 
@@ -663,7 +655,6 @@ function App() {
             <strong className="login-error">{loginError}</strong>
           ) : null}
           <button type="submit">Masuk</button>
-          <span className="login-hint">Default demo: yummyadmin</span>
         </form>
       </main>
     );
@@ -681,7 +672,7 @@ function App() {
           <strong className="green-text">
             {formatCurrency(financeSummary.profit)}
           </strong>
-          <small>Margin bisnis lokal</small>
+          <small>Margin bisnis berjalan</small>
         </article>
         <article className="stat-card">
           <span>Total Orderan</span>
@@ -849,7 +840,7 @@ function App() {
                             setOrders((current) =>
                               current.filter((item) => item.id !== order.id),
                             );
-                            setRemoteStatus("Order dihapus dari Supabase");
+                            setRemoteStatus("Order dihapus");
                           })
                           .catch((error) =>
                             setRemoteStatus(
@@ -963,9 +954,8 @@ function App() {
       </div>
       {!dashboardRemoteEnabled ? (
         <div className="sync-warning">
-          Mode lokal aktif: menu yang ditambah di sini belum otomatis muncul di
-          landing. Isi konfigurasi Supabase di file .env agar dashboard dan
-          landing tersinkron.
+          Database belum terhubung. Sambungkan konfigurasi penyimpanan sebelum
+          publikasi agar data produk tersinkron di semua halaman.
         </div>
       ) : null}
       <form className="inline-form menu-form" onSubmit={addMenu}>
@@ -1007,7 +997,7 @@ function App() {
       {menuForm.img ? (
         <div className="upload-preview">
           <img src={menuForm.img} alt="Preview gambar menu" />
-          <span>Preview gambar menu yang akan tampil di landing</span>
+          <span>Preview gambar menu yang akan tampil di halaman publik</span>
         </div>
       ) : null}
       <div className="menu-grid">
@@ -1030,7 +1020,7 @@ function App() {
                           setMenuItems((current) =>
                             current.filter((menu) => menu.id !== item.id),
                           );
-                          setRemoteStatus("Menu dihapus dari Supabase");
+                          setRemoteStatus("Menu dihapus");
                         })
                         .catch((error) =>
                           setRemoteStatus(`Gagal hapus menu: ${error.message}`),
@@ -1053,8 +1043,8 @@ function App() {
     <section className="page-section">
       <div className="section-head">
         <div>
-          <h1>Moment Landing</h1>
-          <p>Kelola slide moment yang tampil di landing page.</p>
+          <h1>Moment Publik</h1>
+          <p>Kelola slide moment yang tampil di halaman publik.</p>
         </div>
       </div>
       <form className="inline-form moment-form" onSubmit={addMoment}>
@@ -1080,7 +1070,7 @@ function App() {
           onChange={(event) =>
             setMomentForm((form) => ({ ...form, caption: event.target.value }))
           }
-          placeholder="Caption yang tampil di landing"
+          placeholder="Caption yang tampil di halaman publik"
         />
         <label className="file-field">
           <span>Gambar Moment</span>
@@ -1104,7 +1094,7 @@ function App() {
       {momentForm.image ? (
         <div className="upload-preview">
           <img src={momentForm.image} alt="Preview gambar moment" />
-          <span>Preview gambar yang akan tampil di landing</span>
+          <span>Preview gambar yang akan tampil di halaman publik</span>
         </div>
       ) : null}
       <div className="moment-grid">
@@ -1128,7 +1118,7 @@ function App() {
               ) : null}
               <div>
                 <span>{item.tag}</span>
-                <small>{item.date || "Tampil di landing"}</small>
+                <small>{item.date || "Tampil di halaman publik"}</small>
               </div>
               <h2>{item.title}</h2>
               <p>{item.caption}</p>
@@ -1278,13 +1268,7 @@ function App() {
           {activePanel === "menu" ? renderMenu() : null}
           {activePanel === "moment" ? renderMoment() : null}
           {activePanel === "reports" ? renderReports() : null}
-          <button
-            type="button"
-            className="reset-floating"
-            onClick={resetAllData}
-          >
-            Reset demo
-          </button>
+
           <button
             type="button"
             className="logout-floating"

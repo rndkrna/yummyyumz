@@ -8,7 +8,7 @@ const storyBlocks = [
   },
   {
     title: 'Rasa tetap utama',
-    text: 'Desain yang lucu tidak cukup. Kami tetap menaruh fokus pada tekstur cake, buttercream yang nyaman dimakan, dan kombinasi rasa yang terasa seimbang.',
+    text: 'Desain yang lucu tidak cukup. Kami tetap menaruh fokus pada tekstur cake, whipcream yang nyaman dimakan, dan kombinasi rasa yang terasa seimbang.',
   },
   {
     title: 'Setiap order terasa personal',

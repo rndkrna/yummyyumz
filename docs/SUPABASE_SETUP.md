@@ -34,7 +34,7 @@ create table if not exists public.products (
   created_at timestamptz not null default now(),
   name text not null,
   description text default '',
-  price integer not null default 0,
+  price text not null default '0',
   image_url text,
   is_featured boolean not null default true,
   is_available boolean not null default true,
@@ -122,12 +122,12 @@ with check (true);
 
 ```sql
 insert into public.products (name, description, price, image_url, is_featured, sort_order) values
-('Velvet Rose', 'Bento cake dengan rose buttercream aesthetic.', 150000, 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=600', true, 1),
-('Matcha Dream', 'Classic matcha bento dengan cream cheese.', 135000, 'https://images.unsplash.com/photo-1557925923-33b251dc3296?q=80&w=600', true, 2),
-('Choco Classic', 'Dark chocolate ganache signature kami.', 140000, 'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?q=80&w=600', true, 3),
-('Berry Delight', 'Strawberry cream manis dengan fresh berries.', 160000, 'https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?q=80&w=600', true, 4),
-('Vintage Heart', 'Bentuk hati bergaya vintage pastel aesthetic.', 175000, 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?q=80&w=600', true, 5),
-('Minimalist', 'Desain minimalis bersih ala cafe Korea.', 120000, 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=600', true, 6);
+('Velvet Rose', 'Bento cake dengan rose buttercream aesthetic.', '150000', 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=600', true, 1),
+('Matcha Dream', 'Classic matcha bento dengan cream cheese.', '135000', 'https://images.unsplash.com/photo-1557925923-33b251dc3296?q=80&w=600', true, 2),
+('Choco Classic', 'Dark chocolate ganache signature kami.', '140000', 'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?q=80&w=600', true, 3),
+('Berry Delight', 'Strawberry cream manis dengan fresh berries.', '160000', 'https://images.unsplash.com/photo-1606890737304-57a1ca8a5b62?q=80&w=600', true, 4),
+('Vintage Heart', 'Bentuk hati bergaya vintage pastel aesthetic.', '175000', 'https://images.unsplash.com/photo-1588195538326-c5b1e9f80a1b?q=80&w=600', true, 5),
+('Minimalist', 'Desain minimalis bersih ala cafe Korea.', '120000', 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=600', true, 6);
 
 insert into public.moments (title, caption, tag, image_url, target, actual, sort_order) values
 ('Birthday Surprise', 'Bento cake kecil untuk kejutan ulang tahun yang terasa personal dan hangat.', 'Ulang Tahun', 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?q=80&w=1200&auto=format&fit=crop', 2500000, 1750000, 1),

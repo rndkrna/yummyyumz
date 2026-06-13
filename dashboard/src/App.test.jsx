@@ -29,7 +29,7 @@ describe("Dashboard App", () => {
     expect(screen.queryByText(/get started/i)).not.toBeInTheDocument();
   });
 
-  it("dapat menambahkan item menu baru secara lokal", () => {
+  it("dapat menambahkan item menu baru", () => {
     login();
 
     fireEvent.click(screen.getByRole("button", { name: /menu/i }));

@@ -258,12 +258,12 @@ export default function Hero() {
         >
           <div className="w-full flex justify-center md:justify-start">
             <h1 className="font-groovy text-[clamp(4rem,15vw,16rem)] text-white tracking-normal uppercase whitespace-nowrap drop-shadow-md">
-              TRUE
+              YUMMY
             </h1>
           </div>
           <div className="w-full flex justify-center md:justify-end md:-mr-8">
             <h1 className="font-groovy text-[clamp(4rem,15vw,16rem)] text-white tracking-normal uppercase whitespace-nowrap drop-shadow-md">
-              BENTO
+              YUMZ
             </h1>
           </div>
           <div className="w-full flex justify-center md:justify-start">
