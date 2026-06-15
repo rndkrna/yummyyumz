@@ -1,15 +1,21 @@
 export const businessInfo = {
   brandName: "YummyYumz",
-  city: "",
-  whatsappNumber: "",
-  whatsappDisplay: "",
-  instagramHandle: "",
-  instagramUrl: "",
-  facebookUrl: "",
-  addressLines: [],
-  openingHours: [],
+  city: "Tanjungpinang",
+  whatsappNumber: "6283165535082",
+  whatsappDisplay: "+62 831-6553-5082",
+  instagramHandle: "yummyyumz.cake",
+  instagramUrl: "https://instagram.com/yummyyumz.cake",
+  facebookUrl: "https://facebook.com",
+  addressLines: [
+    "Jl. DI Panjaitan Km. 7",
+    "Tanjungpinang, Kepulauan Riau"
+  ],
+  openingHours: [
+    { label: "Senin - Sabtu", hours: "09:00 - 18:00" },
+    { label: "Minggu", hours: "10:00 - 16:00" }
+  ],
   contactNote:
-    "Lengkapi data kontak bisnis agar form WhatsApp dan informasi toko siap digunakan.",
+    "Ada pertanyaan? Hubungi admin melalui form ini atau klik tombol WhatsApp langsung.",
 };
 
 export const featuredProducts = [];

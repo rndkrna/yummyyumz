@@ -196,7 +196,8 @@ export default function Hero() {
       {/* Background Image that shrinks */}
       <div
         ref={bgImageRef}
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-[url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=75&w=1600&auto=format&fit=crop')] bg-cover bg-center origin-top z-10 shadow-2xl transform-gpu will-change-transform"
+        style={{ backgroundImage: "url('/hero-bg.jpg')" }}
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-cover bg-center origin-top z-10 shadow-2xl transform-gpu will-change-transform"
       >
         <div className="absolute inset-0 bg-gradient-to-t from-bakeryBerry/90 via-bakeryBerry/40 to-transparent rounded-inherit overflow-hidden"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-bakeryBerry/70 via-transparent to-bakeryBerry/70"></div>

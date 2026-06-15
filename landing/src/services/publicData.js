@@ -12,22 +12,28 @@ const formatCurrency = (value) =>
     maximumFractionDigits: 0,
   }).format(Number(value) || 0);
 
-const mapProduct = (product, index = 0) => ({
-  id: product.id,
-  name: product.name,
-  title: product.name,
-  desc: product.description || product.desc || "Produk YummyYumz",
-  price:
-    typeof product.price === "number"
-      ? formatCurrency(product.price)
-      : product.price,
-  img: product.image_url || product.img || "",
-  color:
-    product.card_color ||
-    ["bg-bakeryPeach", "bg-[#f5f5f5]", "bg-[#e8f0e6]"][index % 3],
-  accent: product.accent_color || "bg-bakeryBerry",
-  isFeatured: product.is_featured ?? true,
-});
+const mapProduct = (product, index = 0) => {
+  let displayPrice = product.price;
+  if (typeof product.price === "number") {
+    displayPrice = formatCurrency(product.price);
+  } else if (typeof product.price === "string" && /^\d+$/.test(product.price.trim())) {
+    displayPrice = formatCurrency(Number(product.price.trim()));
+  }
+
+  return {
+    id: product.id,
+    name: product.name,
+    title: product.name,
+    desc: product.description || product.desc || "Produk YummyYumz",
+    price: displayPrice,
+    img: product.image_url || product.img || "",
+    color:
+      product.card_color ||
+      ["bg-bakeryPeach", "bg-[#f5f5f5]", "bg-[#e8f0e6]"][index % 3],
+    accent: product.accent_color || "bg-bakeryBerry",
+    isFeatured: product.is_featured ?? true,
+  };
+};
 
 const mapMoment = (moment) => ({
   id: moment.id,
