@@ -50,12 +50,26 @@ const readStoredData = (key, fallback) => {
   }
 };
 
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("id-ID", {
+const formatCurrency = (value) => {
+  const num = Math.round(Number(value) || 0);
+  return new Intl.NumberFormat("id-ID", {
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0,
-  }).format(Number(value) || 0);
+    minimumFractionDigits: 0,
+  }).format(num);
+};
+
+const formatCurrencyShort = (value) => {
+  const num = Math.round(Number(value) || 0);
+  if (num >= 1_000_000_000)
+    return `Rp ${(num / 1_000_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} M`;
+  if (num >= 1_000_000)
+    return `Rp ${(num / 1_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} jt`;
+  if (num >= 1_000)
+    return `Rp ${(num / 1_000).toLocaleString("id-ID", { maximumFractionDigits: 0 })} rb`;
+  return `Rp ${num.toLocaleString("id-ID")}`;
+};
 
 const parseAmount = (value) => {
   const match = String(value).match(/\d[\d.]*/);
@@ -124,6 +138,7 @@ function App() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const isAuthenticated = Boolean(session);
   const [currentRole, setCurrentRole] = useState(null);
+  const [roleChecked, setRoleChecked] = useState(false);
   const [accounts, setAccounts] = useState([]);
   const [accountForm, setAccountForm] = useState({
     email: "",
@@ -207,15 +222,31 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!supabase || !session?.user) return;
+    if (!session?.user) return;
+
+    if (!supabase) {
+      // Tanpa Supabase, anggap admin lokal
+      setCurrentRole("admin");
+      setRoleChecked(true);
+      setActivePanel("overview");
+      return;
+    }
 
     let isMounted = true;
     fetchCurrentRole(session.user.id)
       .then((role) => {
-        if (isMounted) setCurrentRole(role);
+        if (isMounted) {
+          setCurrentRole(role);
+          setRoleChecked(true);
+          setActivePanel(role === "admin" ? "overview" : "orders");
+        }
       })
       .catch(() => {
-        if (isMounted) setCurrentRole("karyawan");
+        if (isMounted) {
+          setCurrentRole("karyawan");
+          setRoleChecked(true);
+          setActivePanel("orders");
+        }
       });
 
     return () => {
@@ -398,15 +429,10 @@ function App() {
       return accumulator;
     }, {});
 
-    const source = Object.entries(groupedRevenue).length
-      ? Object.entries(groupedRevenue).map(([name, amount]) => ({
-          name,
-          amount,
-        }))
-      : topMenu.map((item) => ({
-          name: item.name,
-          amount: getNumericPrice(item.price),
-        }));
+    const source = Object.entries(groupedRevenue).map(([name, amount]) => ({
+      name,
+      amount,
+    }));
 
     const topRevenue = source
       .filter((item) => item.amount > 0)
@@ -760,15 +786,21 @@ function App() {
     });
   };
 
-  const navItems = [
-    ["overview", "▦", "Dashboard Utama"],
-    ["orders", "▣", "Orderan Masuk"],
-    ["finance", "▤", "Pembukuan"],
-    ["menu", "♨", "Menu"],
-    ["moment", "▧", "Moment Publik"],
-    ["reports", "▥", "Laporan"],
-    ...(isAdmin ? [["accounts", "◉", "Kelola Akun"]] : []),
-  ];
+  const navItems = isAdmin
+    ? [
+        ["overview", "▦", "Dashboard Utama"],
+        ["orders", "▣", "Orderan Masuk"],
+        ["finance", "▤", "Pembukuan"],
+        ["menu", "♨", "Menu"],
+        ["moment", "▧", "Moment Publik"],
+        ["reports", "▥", "Laporan"],
+        ["accounts", "◉", "Kelola Akun"],
+      ]
+    : [
+        ["orders", "▣", "Orderan Masuk"],
+        ["menu", "♨", "Menu"],
+        ["moment", "▧", "Moment Publik"],
+      ];
 
   if (!authChecked) {
     return (
@@ -1466,17 +1498,23 @@ function App() {
           </strong>
         </div>
         <nav>
-          {navItems.map(([key, icon, label]) => (
-            <button
-              key={key}
-              type="button"
-              className={activePanel === key ? "active" : ""}
-              onClick={() => setActivePanel(key)}
-            >
-              <span>{icon}</span>
-              {label}
-            </button>
-          ))}
+          {!roleChecked ? (
+            <div style={{ padding: "20px 18px", color: "#d8cbbf", fontSize: "0.85rem", opacity: 0.7 }}>
+              Memuat menu...
+            </div>
+          ) : (
+            navItems.map(([key, icon, label]) => (
+              <button
+                key={key}
+                type="button"
+                className={activePanel === key ? "active" : ""}
+                onClick={() => setActivePanel(key)}
+              >
+                <span>{icon}</span>
+                {label}
+              </button>
+            ))
+          )}
         </nav>
         <div className="profile">
           <b>B</b>

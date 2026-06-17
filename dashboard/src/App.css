@@ -13,6 +13,15 @@
 
 * {
     box-sizing: border-box;
+    min-width: 0;
+}
+
+html,
+body,
+#root {
+    width: 100%;
+    min-width: 320px;
+    overflow-x: hidden;
 }
 
 body {
@@ -33,7 +42,15 @@ button,
 input,
 select,
 textarea {
+    max-width: 100%;
     font: inherit;
+}
+
+img,
+svg,
+canvas,
+video {
+    max-width: 100%;
 }
 
 .login-shell {
@@ -93,22 +110,44 @@ textarea {
     color: var(--red);
 }
 
+.login-warning {
+    margin: 0;
+    border: 1px dashed var(--orange);
+    border-radius: 14px;
+    padding: 12px;
+    background: #fff7e8;
+    color: var(--orange-dark);
+    font-weight: 800;
+    line-height: 1.45;
+}
+
+.login-card button:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
 .app-shell {
-    min-height: 100vh;
+    height: 100vh;
     display: grid;
     grid-template-columns: 320px minmax(0, 1fr);
+    grid-template-rows: 100vh;
     background: var(--cream);
 }
 
 .sidebar {
-    position: sticky;
-    top: 0;
     height: 100vh;
     display: flex;
     flex-direction: column;
     background: var(--brown);
     border-right: 1px solid #463828;
     color: white;
+    overflow-y: auto;
+}
+
+.main-panel {
+    min-width: 0;
+    height: 100vh;
+    overflow-y: auto;
 }
 
 .brand {
@@ -141,9 +180,13 @@ textarea {
     display: grid;
     gap: 6px;
     padding: 30px 18px;
+    overflow-y: auto;
+    flex: 1;
+    align-content: start;
 }
 
 .sidebar nav button {
+    min-width: 0;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -228,7 +271,7 @@ textarea {
 
 .content-area {
     position: relative;
-    padding: 38px;
+    padding: 38px 38px 92px;
 }
 
 .stats-grid {
@@ -242,7 +285,8 @@ textarea {
 .chart-card,
 .table-card,
 .menu-card,
-.moment-card {
+.moment-card,
+.employee-card {
     background: #fff;
     border: 1px solid var(--line);
     border-radius: 20px;
@@ -495,6 +539,10 @@ textarea {
 
 .inline-form.moment-form {
     grid-template-columns: 1fr 0.75fr 1.4fr 1.2fr 0.8fr auto;
+}
+
+.inline-form.employee-form {
+    grid-template-columns: 1fr 1fr 1fr 0.75fr auto;
 }
 
 .file-field {
@@ -782,6 +830,75 @@ textarea {
     background: var(--orange);
 }
 
+.employee-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.employee-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 14px;
+    align-items: center;
+    padding: 16px;
+}
+
+.employee-card b {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    border-radius: 14px;
+    background: var(--orange);
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.employee-card h3,
+.employee-card p {
+    margin: 0;
+}
+
+.employee-card p,
+.employee-card small {
+    color: var(--muted);
+}
+
+.staff-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 22px;
+}
+
+.staff-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.staff-list-item {
+    display: grid;
+    gap: 4px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fffdf9;
+}
+
+.staff-list-item span {
+    font-weight: 900;
+}
+
+.staff-list-item strong {
+    color: var(--orange-dark);
+}
+
+.staff-list-item small {
+    color: var(--muted);
+}
+
 .report-stats {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -792,8 +909,9 @@ textarea {
     margin: 28px auto;
     border-radius: 50%;
     position: relative;
-    display: grid;
-    place-items: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
 }
 
@@ -805,23 +923,28 @@ textarea {
     background: #fff;
 }
 
-.donut-chart strong,
-.donut-chart small {
+.donut-chart-label {
     position: relative;
     z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    max-width: 110px;
 }
 
 .donut-chart strong {
-    max-width: 130px;
     color: var(--orange-dark);
-    font-size: 1.05rem;
-    line-height: 1.15;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    word-break: break-word;
 }
 
 .donut-chart small {
-    margin-top: 34px;
     color: var(--muted);
     font-weight: 900;
+    font-size: 0.75rem;
 }
 
 .legend {
@@ -894,6 +1017,8 @@ textarea {
 
     .sidebar nav {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 16px;
+        overflow: visible;
     }
 
     .profile {
@@ -904,33 +1029,143 @@ textarea {
     .overview-grid,
     .menu-grid,
     .moment-grid,
+    .employee-grid,
+    .staff-dashboard-grid,
     .report-stats {
         grid-template-columns: 1fr;
     }
 
     .inline-form,
     .inline-form.menu-form,
-    .inline-form.moment-form {
+    .inline-form.moment-form,
+    .inline-form.employee-form {
         grid-template-columns: 1fr;
     }
 }
 
 @media (max-width: 640px) {
+    .login-shell {
+        min-height: 100dvh;
+        padding: 14px;
+    }
+
+    .login-card {
+        padding: 22px;
+        border-radius: 20px;
+    }
+
+    .login-card h1 {
+        font-size: clamp(1.75rem, 9vw, 2.2rem);
+    }
+
     .topbar,
     .content-area {
-        padding-left: 18px;
-        padding-right: 18px;
+        padding-left: 14px;
+        padding-right: 14px;
+    }
+
+    .content-area {
+        padding-bottom: 96px;
     }
 
     .topbar {
         height: auto;
-        padding-top: 18px;
-        padding-bottom: 18px;
+        padding-top: 16px;
+        padding-bottom: 16px;
         align-items: flex-start;
         flex-direction: column;
     }
 
+    .topbar h1 {
+        font-size: clamp(1.35rem, 7vw, 1.65rem);
+    }
+
+    .topbar-meta {
+        width: 100%;
+        justify-items: start;
+    }
+
+    .brand {
+        padding: 16px;
+    }
+
+    .brand strong {
+        font-size: 1.2rem;
+    }
+
     .sidebar nav {
         grid-template-columns: 1fr;
+        padding: 10px 14px 16px;
+    }
+
+    .sidebar nav button {
+        padding: 12px 14px;
+    }
+
+    .table-card,
+    .chart-card,
+    .moment-card {
+        padding: 18px;
+        border-radius: 16px;
+    }
+
+    .stat-card {
+        min-height: auto;
+        padding: 20px;
+    }
+
+    .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .section-head h1 {
+        font-size: clamp(1.5rem, 8vw, 2rem);
+    }
+
+    .section-head p {
+        font-size: 1rem;
+    }
+
+    .data-table {
+        min-width: 760px;
+    }
+
+    .cash-table {
+        min-width: 640px;
+    }
+
+    .employee-card {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .employee-card button {
+        grid-column: 1 / -1;
+        width: 100%;
+    }
+
+    .logout-floating {
+        right: 14px;
+        bottom: 14px;
+        left: 14px;
+        width: calc(100% - 28px);
+    }
+}
+
+@media (max-width: 380px) {
+    .content-area {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .table-card,
+    .chart-card,
+    .moment-card {
+        padding: 14px;
+    }
+
+    .sidebar nav button {
+        font-size: 0.92rem;
     }
 }
