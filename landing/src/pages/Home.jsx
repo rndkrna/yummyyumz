@@ -1,21 +1,51 @@
-import Hero from '../components/sections/Hero';
-import About from '../components/sections/About';
-import MarqueeSeparator from '../components/sections/MarqueeSeparator';
-import Catalog from '../components/sections/Catalog';
-import DeliveryBox from '../components/sections/DeliveryBox';
-import Footer from '../components/sections/Footer';
+import { Suspense, lazy, useEffect, useState } from "react";
+import Hero from "../components/sections/Hero";
+
+const About = lazy(() => import("../components/sections/About"));
+const MarqueeSeparator = lazy(
+  () => import("../components/sections/MarqueeSeparator"),
+);
+const Catalog = lazy(() => import("../components/sections/Catalog"));
+const DeliveryBox = lazy(() => import("../components/sections/DeliveryBox"));
+const Footer = lazy(() => import("../components/sections/Footer"));
 
 export default function Home() {
+  const [showDeferredSections, setShowDeferredSections] = useState(false);
+
+  useEffect(() => {
+    if ("requestIdleCallback" in window) {
+      const idleId = window.requestIdleCallback(
+        () => setShowDeferredSections(true),
+        { timeout: 1800 },
+      );
+      return () => window.cancelIdleCallback(idleId);
+    }
+
+    const timeoutId = window.setTimeout(
+      () => setShowDeferredSections(true),
+      900,
+    );
+    return () => window.clearTimeout(timeoutId);
+  }, []);
+
   return (
     <>
       <main>
         <Hero />
-        <About />
-        <MarqueeSeparator />
-        <Catalog />
-        <DeliveryBox />
+        {showDeferredSections ? (
+          <Suspense fallback={null}>
+            <About />
+            <MarqueeSeparator />
+            <Catalog />
+            <DeliveryBox />
+          </Suspense>
+        ) : null}
       </main>
-      <Footer />
+      {showDeferredSections ? (
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
+      ) : null}
     </>
   );
 }

@@ -35,15 +35,13 @@ export default function PageTransition({ children }) {
         gsap.set(panels, { yPercent: 0 });
         gsap.fromTo(
           page,
-          { autoAlpha: 0, y: 24, scale: 0.985, filter: "blur(10px)" },
+          { autoAlpha: 0, y: 12 },
           {
             autoAlpha: 1,
             y: 0,
-            scale: 1,
-            filter: "blur(0px)",
-            duration: 0.9,
-            ease: "expo.out",
-            clearProps: "filter,transform",
+            duration: 0.35,
+            ease: "power2.out",
+            clearProps: "transform",
             onComplete: () => ScrollTrigger.refresh(),
           },
         );

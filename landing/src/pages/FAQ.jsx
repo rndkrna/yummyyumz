@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import Footer from '../components/sections/Footer';
-import { faqItems } from '../data/siteData';
+import { useState } from "react";
+import Footer from "../components/sections/Footer";
+import { faqItems } from "../data/siteData";
 
 function FaqItem({ item, isOpen, onToggle }) {
   return (
@@ -10,11 +10,11 @@ function FaqItem({ item, isOpen, onToggle }) {
         onClick={onToggle}
         className="flex w-full items-center justify-between gap-6 px-6 py-6 text-left md:px-8"
       >
-        <span className="font-display text-xl font-bold uppercase tracking-tight text-bakeryBerry md:text-2xl">
+        <span className="min-w-0 break-words font-display text-lg font-bold uppercase tracking-tight text-bakeryBerry md:text-2xl">
           {item.question}
         </span>
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-bakeryText bg-bakeryPeach font-display text-2xl font-bold text-bakeryBerry">
-          {isOpen ? '−' : '+'}
+          {isOpen ? "−" : "+"}
         </span>
       </button>
 
@@ -34,16 +34,16 @@ export default function FAQ() {
 
   return (
     <>
-      <main className="bg-bakeryBg pt-32">
-        <section className="px-6 pb-20 md:px-16 md:pb-28">
+      <main className="bg-bakeryBg pt-28 md:pt-32">
+        <section className="px-4 pb-20 sm:px-6 md:px-16 md:pb-28">
           <div className="mx-auto max-w-[1500px]">
-            <div className="mb-12 rounded-[2.5rem] border-4 border-bakeryText bg-bakeryPeach px-6 py-10 shadow-[12px_12px_0px_0px_rgba(74,62,61,1)] md:px-10 md:py-12">
+            <div className="mb-12 max-w-full overflow-hidden rounded-[2rem] border-4 border-bakeryText bg-bakeryPeach px-5 py-8 shadow-[8px_8px_0px_0px_rgba(74,62,61,1)] sm:rounded-[2.5rem] sm:px-6 sm:py-10 md:px-10 md:py-12 md:shadow-[12px_12px_0px_0px_rgba(74,62,61,1)]">
               <span className="font-body text-xs font-bold uppercase tracking-[0.3em] text-bakeryBerry">
                 FAQ
               </span>
-              <h1 className="mt-5 font-display text-[clamp(2.8rem,7vw,6rem)] font-extrabold uppercase leading-[0.9] tracking-tight text-bakeryBerry">
+              <h1 className="mt-5 max-w-full break-words font-display text-[clamp(2rem,10.5vw,6rem)] font-extrabold uppercase leading-[0.92] tracking-tight text-bakeryBerry [overflow-wrap:anywhere] sm:text-[clamp(2.6rem,8vw,6rem)]">
                 Pertanyaan yang
-                <br />
+                <br className="hidden sm:block" />
                 sering ditanyakan.
               </h1>
               <p className="mt-5 max-w-2xl font-body text-sm font-medium leading-relaxed text-bakeryText md:text-base">
@@ -59,7 +59,11 @@ export default function FAQ() {
                   key={item.id}
                   item={item}
                   isOpen={openId === item.id}
-                  onToggle={() => setOpenId((currentId) => (currentId === item.id ? null : item.id))}
+                  onToggle={() =>
+                    setOpenId((currentId) =>
+                      currentId === item.id ? null : item.id,
+                    )
+                  }
                 />
               ))}
             </div>

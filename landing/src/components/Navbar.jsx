@@ -10,6 +10,8 @@ export default function Navbar() {
   const mobilePanelRef = useRef(null);
   const menuLinksRef = useRef([]);
 
+  const dashboardUrl = import.meta.env.VITE_DASHBOARD_URL || "/dashboard/";
+
   const links = [
     { label: "HOME", to: "/" },
     { label: "CATALOG", to: "/catalog" },
@@ -56,6 +58,11 @@ export default function Navbar() {
     }, 700);
   };
 
+  const handleDashboardOpen = () => {
+    if (isMobileMenuOpen) setIsMobileMenuOpen(false);
+    window.location.href = dashboardUrl;
+  };
+
   const addToRefs = (el) => {
     if (el && !menuLinksRef.current.includes(el)) {
       menuLinksRef.current.push(el);
@@ -90,9 +97,14 @@ export default function Navbar() {
                 0
               </span>
             </button>
-            <button className="hidden md:flex bg-gradient-to-br from-bakeryBerry to-bakeryPeach border-3 border-white px-6 h-12 items-center justify-center rounded-lg shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out">
+            <button
+              type="button"
+              onClick={handleDashboardOpen}
+              data-cursor-hover
+              className="hidden md:flex bg-gradient-to-br from-bakeryBerry to-bakeryPeach border-3 border-white px-6 h-12 items-center justify-center rounded-lg shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
+            >
               <span className="font-body font-bold text-sm text-white uppercase">
-                Bahasa
+                Dashboard
               </span>
             </button>
             <button
@@ -115,12 +127,12 @@ export default function Navbar() {
       {/* Drop-down Panel - Enhanced */}
       <div
         ref={mobilePanelRef}
-        className="fixed top-0 left-0 w-full h-auto pb-20 z-[60] bg-gradient-to-br from-bakeryBerry via-bakeryBerry to-bakeryPeach text-white transform -translate-y-full shadow-2xl"
+        className="fixed top-0 left-0 w-full max-h-[100dvh] overflow-y-auto pb-10 md:pb-20 z-[60] bg-gradient-to-br from-bakeryBerry via-bakeryBerry to-bakeryPeach text-white transform -translate-y-full shadow-2xl"
       >
         {/* Menu Header */}
-        <div className="relative pt-8 px-8 flex justify-between items-start z-10 max-w-[1400px] mx-auto w-full md:px-16">
+        <div className="relative pt-6 px-4 sm:px-8 flex justify-between items-start z-10 max-w-[1400px] mx-auto w-full md:px-16 md:pt-8">
           {/* Language Switcher */}
-          <div className="flex border-3 border-white/40 bg-white/10 shadow-lg rounded-lg backdrop-blur-sm">
+          <div className="hidden sm:flex border-3 border-white/40 bg-white/10 shadow-lg rounded-lg backdrop-blur-sm">
             <button className="px-5 py-2 font-display text-sm font-bold text-white bg-transparent transition-colors hover:bg-white/20">
               ua
             </button>
@@ -150,7 +162,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        <div className="w-full flex flex-col justify-center px-10 md:px-24 mt-16 relative max-w-[1400px] mx-auto">
+        <div className="w-full flex flex-col justify-center px-4 sm:px-10 md:px-24 mt-8 md:mt-16 relative max-w-[1400px] mx-auto">
           <div className="flex flex-col space-y-4">
             {links.map((link, idx) => (
               <div key={idx} className="overflow-hidden">
@@ -158,12 +170,22 @@ export default function Navbar() {
                   ref={addToRefs}
                   onClick={() => handleNavigate(link.to)}
                   data-cursor-hover
-                  className="font-display font-bold text-[2.8rem] md:text-7xl uppercase text-left text-white hover:text-bakeryBg transition-all duration-500 ease-out leading-[1.1] tracking-tight hover:scale-105 transform origin-left"
+                  className="font-display font-bold text-[clamp(2rem,13vw,4rem)] md:text-7xl uppercase text-left text-white hover:text-bakeryBg transition-all duration-500 ease-out leading-[1.1] tracking-tight hover:scale-105 transform origin-left"
                 >
                   {link.label}
                 </button>
               </div>
             ))}
+            <div className="overflow-hidden">
+              <button
+                ref={addToRefs}
+                onClick={handleDashboardOpen}
+                data-cursor-hover
+                className="font-display font-bold text-[clamp(2rem,13vw,4rem)] md:text-7xl uppercase text-left text-white hover:text-bakeryBg transition-all duration-500 ease-out leading-[1.1] tracking-tight hover:scale-105 transform origin-left"
+              >
+                DASHBOARD
+              </button>
+            </div>
           </div>
         </div>
       </div>

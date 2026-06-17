@@ -8,6 +8,12 @@ export default function CustomCursor() {
   const [hoverText, setHoverText] = useState("");
 
   useEffect(() => {
+    const canHover = window.matchMedia(
+      "(hover: hover) and (pointer: fine)",
+    ).matches;
+
+    if (!canHover) return undefined;
+
     document.body.style.cursor = "none";
 
     // Center elements based on their transforms

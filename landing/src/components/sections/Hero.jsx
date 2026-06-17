@@ -16,12 +16,8 @@ export default function Hero() {
 
   useLayoutEffect(() => {
     let ctx = gsap.context(() => {
-      // Enhanced entrance animation - Stage 1: Impact Scene
-      gsap.fromTo(
-        bgImageRef.current,
-        { scale: 1.05, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 2, ease: "expo.out", delay: 0.2 },
-      );
+      // Keep the LCP image visible immediately; avoid opacity animation on hero image.
+      gsap.set(bgImageRef.current, { scale: 1, opacity: 1 });
 
       gsap.fromTo(
         titleLeftRef.current.children,
@@ -29,17 +25,23 @@ export default function Hero() {
         {
           y: 0,
           opacity: 1,
-          duration: 1.6,
-          stagger: 0.15,
-          ease: "expo.out",
-          delay: 0.5,
+          duration: 0.75,
+          stagger: 0.08,
+          ease: "power2.out",
         },
       );
 
       gsap.fromTo(
         textRightRef.current,
-        { opacity: 0, x: 40, y: 15 },
-        { opacity: 1, x: 0, y: 0, duration: 1.4, delay: 1.2, ease: "expo.out" },
+        { opacity: 0, x: 20, y: 10 },
+        {
+          opacity: 1,
+          x: 0,
+          y: 0,
+          duration: 0.6,
+          delay: 0.15,
+          ease: "power2.out",
+        },
       );
 
       const heroMarquees = gsap.utils.toArray(".hero-marquee");
@@ -61,6 +63,13 @@ export default function Hero() {
       gsap.set(revealSceneRef.current, { opacity: 0, y: 34, scale: 0.98 });
 
       const isMobile = window.matchMedia("(max-width: 767px)").matches;
+      const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+
+      if (isTouchDevice) {
+        gsap.set(revealSceneRef.current, { opacity: 1, y: 0, scale: 1 });
+        gsap.set(heroMarquees, { opacity: 0.28 });
+        return;
+      }
 
       // Scroll effect: Stage 2 - Reveal Scene
       // Keep this as the single scroll-linked animation for the hero to avoid transform conflicts.
@@ -70,7 +79,7 @@ export default function Hero() {
           start: "top top",
           end: isMobile ? "+=90%" : "+=120%",
           scrub: isMobile ? 0.55 : 0.8,
-          pin: true,
+          pin: !isMobile,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
@@ -196,9 +205,15 @@ export default function Hero() {
       {/* Background Image that shrinks */}
       <div
         ref={bgImageRef}
-        style={{ backgroundImage: "url('/hero-bg.jpg')" }}
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-cover bg-center origin-top z-10 shadow-2xl transform-gpu will-change-transform"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full origin-top z-10 shadow-2xl transform-gpu will-change-transform"
       >
+        <img
+          src="/hero-bg.jpg"
+          alt="YummyYumz bento cake"
+          fetchPriority="high"
+          decoding="async"
+          className="h-full w-full object-cover object-center"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-bakeryBerry/90 via-bakeryBerry/40 to-transparent rounded-inherit overflow-hidden"></div>
         <div className="absolute inset-0 bg-gradient-to-r from-bakeryBerry/70 via-transparent to-bakeryBerry/70"></div>
       </div>

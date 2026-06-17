@@ -6,12 +6,59 @@
     html,
     body {
         @apply bg-bakeryBg text-bakeryText;
+        width: 100%;
+        min-width: 320px;
+        overflow-x: hidden;
+    }
+
+    #root {
+        min-width: 0;
         overflow-x: hidden;
     }
 
     * {
+        min-width: 0;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+    }
+
+    img,
+    video,
+    canvas,
+    svg {
+        max-width: 100%;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+        max-width: 100%;
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+        body {
+            cursor: auto;
+        }
+    }
+
+    @media (max-width: 480px) {
+        body {
+            font-size: 15px;
+        }
+
+        main,
+        section,
+        header,
+        footer {
+            max-width: 100vw;
+        }
+
+        input,
+        select,
+        textarea {
+            font-size: 16px;
+        }
     }
 }
 
