@@ -12,6 +12,11 @@ import {
   insertProduct,
   updateOrderStatus,
 } from "./services/dashboardData";
+import {
+  createEmployeeAccount,
+  fetchAccounts,
+  fetchCurrentRole,
+} from "./services/accounts";
 import { supabase } from "./lib/supabase";
 
 const STORAGE_KEYS = {
@@ -118,6 +123,17 @@ function App() {
   const [loginError, setLoginError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const isAuthenticated = Boolean(session);
+  const [currentRole, setCurrentRole] = useState(null);
+  const [accounts, setAccounts] = useState([]);
+  const [accountForm, setAccountForm] = useState({
+    email: "",
+    password: "",
+    role: "karyawan",
+  });
+  const [accountError, setAccountError] = useState("");
+  const [accountMessage, setAccountMessage] = useState("");
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+  const isAdmin = currentRole === "admin";
   const [activePanel, setActivePanel] = useState("overview");
   const [menuItems, setMenuItems] = useState(() =>
     readStoredData(STORAGE_KEYS.menu, initialMenuItems),
@@ -189,6 +205,40 @@ function App() {
       authListener?.subscription?.unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (!supabase || !session?.user) return;
+
+    let isMounted = true;
+    fetchCurrentRole(session.user.id)
+      .then((role) => {
+        if (isMounted) setCurrentRole(role);
+      })
+      .catch(() => {
+        if (isMounted) setCurrentRole("karyawan");
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [session]);
+
+  useEffect(() => {
+    if (currentRole !== "admin" || !dashboardRemoteEnabled) return;
+
+    let isMounted = true;
+    fetchAccounts()
+      .then((data) => {
+        if (isMounted) setAccounts(data);
+      })
+      .catch((error) => {
+        if (isMounted) setAccountError(error.message);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currentRole]);
 
   useEffect(() => {
     if (!isAuthenticated || !dashboardRemoteEnabled) return;
@@ -449,6 +499,48 @@ function App() {
       await supabase.auth.signOut();
     }
     setSession(null);
+    setCurrentRole(null);
+    setAccounts([]);
+    setActivePanel("overview");
+  };
+
+  const handleCreateAccount = async (event) => {
+    event.preventDefault();
+    const accountEmail = accountForm.email.trim();
+    if (!accountEmail || !accountForm.password) {
+      setAccountError("Email dan password wajib diisi.");
+      setAccountMessage("");
+      return;
+    }
+    setIsCreatingAccount(true);
+    setAccountError("");
+    setAccountMessage("");
+    try {
+      const created = await createEmployeeAccount({
+        email: accountEmail,
+        password: accountForm.password,
+        role: accountForm.role,
+      });
+      setAccountMessage(
+        `Akun ${created?.email || accountEmail} berhasil dibuat.`,
+      );
+      setAccountForm({ email: "", password: "", role: "karyawan" });
+      if (created) {
+        setAccounts((current) => [
+          {
+            id: created.id,
+            email: created.email,
+            role: created.role,
+            created_at: new Date().toISOString(),
+          },
+          ...current.filter((account) => account.id !== created.id),
+        ]);
+      }
+    } catch (error) {
+      setAccountError(error.message || "Gagal membuat akun.");
+    } finally {
+      setIsCreatingAccount(false);
+    }
   };
 
   const addOrder = async (event) => {
@@ -675,6 +767,7 @@ function App() {
     ["menu", "♨", "Menu"],
     ["moment", "▧", "Moment Publik"],
     ["reports", "▥", "Laporan"],
+    ...(isAdmin ? [["accounts", "◉", "Kelola Akun"]] : []),
   ];
 
   if (!authChecked) {
@@ -1286,6 +1379,78 @@ function App() {
     </section>
   );
 
+  const renderAccounts = () => (
+    <section className="page-section">
+      <div className="section-head">
+        <div>
+          <h1>Kelola Akun</h1>
+          <p>Tambah akun karyawan atau admin dan atur perannya.</p>
+        </div>
+      </div>
+      {!dashboardRemoteEnabled ? (
+        <div className="sync-warning">
+          Database belum terhubung. Sambungkan Supabase untuk mengelola akun.
+        </div>
+      ) : null}
+      <form className="inline-form" onSubmit={handleCreateAccount}>
+        <input
+          aria-label="Email akun"
+          type="email"
+          value={accountForm.email}
+          onChange={(event) =>
+            setAccountForm((form) => ({ ...form, email: event.target.value }))
+          }
+          placeholder="karyawan@yummyyumz.com"
+        />
+        <input
+          aria-label="Password akun"
+          type="password"
+          value={accountForm.password}
+          onChange={(event) =>
+            setAccountForm((form) => ({
+              ...form,
+              password: event.target.value,
+            }))
+          }
+          placeholder="Password (min. 6 karakter)"
+        />
+        <select
+          aria-label="Role akun"
+          value={accountForm.role}
+          onChange={(event) =>
+            setAccountForm((form) => ({ ...form, role: event.target.value }))
+          }
+        >
+          <option value="karyawan">Karyawan</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button type="submit" disabled={isCreatingAccount}>
+          {isCreatingAccount ? "Menyimpan..." : "+ Tambah Akun"}
+        </button>
+      </form>
+      {accountError ? (
+        <strong className="login-error">{accountError}</strong>
+      ) : null}
+      {accountMessage ? <p className="login-hint">{accountMessage}</p> : null}
+      <div className="data-table">
+        <div className="table-row table-head">
+          <span>Email</span>
+          <span>Role</span>
+          <span>Dibuat</span>
+        </div>
+        {accounts.map((account) => (
+          <div key={account.id} className="table-row">
+            <span>{account.email}</span>
+            <span className="status-pill">{account.role}</span>
+            <span>
+              {account.created_at ? formatShortDate(account.created_at) : "-"}
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+
   const pageTitle =
     navItems.find(([key]) => key === activePanel)?.[2] || "Dashboard Utama";
 
@@ -1335,6 +1500,7 @@ function App() {
           {activePanel === "menu" ? renderMenu() : null}
           {activePanel === "moment" ? renderMoment() : null}
           {activePanel === "reports" ? renderReports() : null}
+          {activePanel === "accounts" && isAdmin ? renderAccounts() : null}
 
           <button
             type="button"

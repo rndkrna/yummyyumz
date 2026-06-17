@@ -52,6 +52,20 @@ vi.mock("./services/dashboardData", () => ({
   deleteOrder: vi.fn(),
 }));
 
+const fetchCurrentRole = vi.fn(async () => "karyawan");
+const fetchAccounts = vi.fn(async () => []);
+const createEmployeeAccount = vi.fn(async ({ email, role }) => ({
+  id: "new-user-id",
+  email,
+  role,
+}));
+
+vi.mock("./services/accounts", () => ({
+  fetchCurrentRole: (...args) => fetchCurrentRole(...args),
+  fetchAccounts: (...args) => fetchAccounts(...args),
+  createEmployeeAccount: (...args) => createEmployeeAccount(...args),
+}));
+
 const { default: App } = await import("./App");
 
 const login = async () => {
@@ -73,6 +87,16 @@ describe("Dashboard App", () => {
     authCallback = null;
     signInWithPassword.mockClear();
     signOut.mockClear();
+    fetchCurrentRole.mockClear();
+    fetchCurrentRole.mockResolvedValue("karyawan");
+    fetchAccounts.mockClear();
+    fetchAccounts.mockResolvedValue([]);
+    createEmployeeAccount.mockClear();
+    createEmployeeAccount.mockImplementation(async ({ email, role }) => ({
+      id: "new-user-id",
+      email,
+      role,
+    }));
   });
 
   it("menampilkan area kelola menu dan kelola moment setelah login", async () => {
@@ -183,6 +207,80 @@ describe("Dashboard App", () => {
     await waitFor(() => expect(signOut).toHaveBeenCalled());
     expect(
       await screen.findByRole("button", { name: /masuk/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("menyembunyikan menu Kelola Akun untuk karyawan", async () => {
+    fetchCurrentRole.mockResolvedValue("karyawan");
+    await login();
+
+    await waitFor(() => expect(fetchCurrentRole).toHaveBeenCalled());
+    expect(
+      screen.queryByRole("button", { name: /kelola akun/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("menampilkan menu Kelola Akun untuk admin", async () => {
+    fetchCurrentRole.mockResolvedValue("admin");
+    await login();
+
+    expect(
+      await screen.findByRole("button", { name: /kelola akun/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("admin dapat menambah akun karyawan", async () => {
+    fetchCurrentRole.mockResolvedValue("admin");
+    await login();
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: /kelola akun/i }),
+    );
+
+    fireEvent.change(screen.getByLabelText(/email akun/i), {
+      target: { value: "karyawan@yummyyumz.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/password akun/i), {
+      target: { value: "rahasia123" },
+    });
+    fireEvent.change(screen.getByLabelText(/role akun/i), {
+      target: { value: "karyawan" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /tambah akun/i }));
+
+    await waitFor(() =>
+      expect(createEmployeeAccount).toHaveBeenCalledWith({
+        email: "karyawan@yummyyumz.com",
+        password: "rahasia123",
+        role: "karyawan",
+      }),
+    );
+    expect(
+      await screen.findByText(/berhasil dibuat/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByText(/karyawan@yummyyumz\.com/i).length,
+    ).toBeGreaterThanOrEqual(2);
+  });
+
+  it("menampilkan pesan error saat gagal menambah akun", async () => {
+    fetchCurrentRole.mockResolvedValue("admin");
+    createEmployeeAccount.mockRejectedValue(new Error("Email sudah dipakai."));
+    await login();
+
+    fireEvent.click(
+      await screen.findByRole("button", { name: /kelola akun/i }),
+    );
+    fireEvent.change(screen.getByLabelText(/email akun/i), {
+      target: { value: "dobel@yummyyumz.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/password akun/i), {
+      target: { value: "rahasia123" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /tambah akun/i }));
+
+    expect(
+      await screen.findByText(/email sudah dipakai/i),
     ).toBeInTheDocument();
   });
 });

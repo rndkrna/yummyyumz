@@ -135,11 +135,73 @@ insert into public.moments (title, caption, tag, image_url, target, actual, sort
 ('Graduation Day', 'Cocok untuk hadiah wisuda, ucapan selamat, atau perayaan kecil setelah perjuangan panjang.', 'Wisuda', 'https://images.unsplash.com/photo-1525648199074-cee30ba79a4a?q=80&w=1200&auto=format&fit=crop', 5000000, 3200000, 3);
 ```
 
-## 5. Catatan keamanan
+## 5. Akun & role (admin / karyawan)
 
-Policy `for all using (true)` cocok untuk demo, tetapi tidak aman untuk produksi karena anon key bisa mengubah data. Untuk produksi:
+Login dashboard memakai Supabase Auth, dan tiap user punya role di tabel `profiles`.
+Admin bisa menambah akun karyawan/admin baru dari menu **Kelola Akun** di dashboard.
+Pembuatan akun dijalankan oleh Edge Function `create-user` (memakai service_role key
+di server, tidak pernah dikirim ke frontend).
 
-1. Aktifkan Supabase Auth.
-2. Buat tabel/claim role admin.
-3. Ubah policy insert/update/delete agar hanya admin yang boleh menulis.
-4. Jangan gunakan service role key di frontend.
+### 5.1 Tabel `profiles` + RLS
+
+```sql
+create table if not exists public.profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  email text,
+  role text not null default 'karyawan' check (role in ('admin', 'karyawan')),
+  created_at timestamptz not null default now()
+);
+
+alter table public.profiles enable row level security;
+
+-- Helper SECURITY DEFINER untuk menghindari rekursi RLS saat cek role.
+create or replace function public.current_user_role()
+returns text
+language sql
+security definer
+set search_path = public
+as $$
+  select role from public.profiles where id = auth.uid();
+$$;
+
+create policy "Users can read own profile"
+on public.profiles for select
+using (auth.uid() = id);
+
+create policy "Admins can read all profiles"
+on public.profiles for select
+using (public.current_user_role() = 'admin');
+```
+
+### 5.2 Buat admin pertama
+
+Buat user admin di Supabase Dashboard > Authentication > Users > Add user, lalu
+jadikan dia admin:
+
+```sql
+insert into public.profiles (id, email, role)
+select id, email, 'admin' from auth.users where email = 'admin@yummyyumz.com'
+on conflict (id) do update set role = 'admin';
+```
+
+### 5.3 Deploy Edge Function `create-user`
+
+Function ada di `supabase/functions/create-user/`. Service role key sudah otomatis
+tersedia sebagai env `SUPABASE_SERVICE_ROLE_KEY` di runtime Edge Function.
+
+```bash
+supabase login
+supabase link --project-ref <project-ref>
+supabase functions deploy create-user
+```
+
+Function memverifikasi pemanggil adalah admin (lewat tabel `profiles`) sebelum membuat
+user baru via Admin API dan mengisi role-nya.
+
+## 6. Catatan keamanan
+
+Policy `for all using (true)` pada tabel data (products/orders/dst.) cocok untuk demo,
+tetapi tidak aman untuk produksi karena anon key bisa mengubah data. Untuk produksi:
+
+1. Ubah policy insert/update/delete agar hanya admin (`public.current_user_role() = 'admin'`) yang boleh menulis.
+2. Jangan pernah menaruh service role key di frontend — gunakan Edge Function.
