@@ -19,36 +19,12 @@ import {
 } from "./services/accounts";
 import { supabase } from "./lib/supabase";
 
-const STORAGE_KEYS = {
-  menu: "yummyyumz-dashboard-menu",
-  moments: "yummyyumz-dashboard-moments",
-  orders: "yummyyumz-dashboard-orders",
-  finances: "yummyyumz-dashboard-finances",
-};
-
 const todayLabel = new Intl.DateTimeFormat("id-ID", {
   weekday: "long",
   day: "numeric",
   month: "long",
   year: "numeric",
 }).format(new Date());
-
-const initialMenuItems = [];
-
-const initialMomentItems = [];
-
-const initialOrders = [];
-
-const initialFinanceRecords = [];
-
-const readStoredData = (key, fallback) => {
-  try {
-    const storedValue = window.localStorage.getItem(key);
-    return storedValue ? JSON.parse(storedValue) : fallback;
-  } catch {
-    return fallback;
-  }
-};
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat("id-ID", {
@@ -135,18 +111,10 @@ function App() {
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
   const isAdmin = currentRole === "admin";
   const [activePanel, setActivePanel] = useState("overview");
-  const [menuItems, setMenuItems] = useState(() =>
-    readStoredData(STORAGE_KEYS.menu, initialMenuItems),
-  );
-  const [momentItems, setMomentItems] = useState(() =>
-    readStoredData(STORAGE_KEYS.moments, initialMomentItems),
-  );
-  const [orders, setOrders] = useState(() =>
-    readStoredData(STORAGE_KEYS.orders, initialOrders),
-  );
-  const [financeRecords, setFinanceRecords] = useState(() =>
-    readStoredData(STORAGE_KEYS.finances, initialFinanceRecords),
-  );
+  const [menuItems, setMenuItems] = useState([]);
+  const [momentItems, setMomentItems] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [financeRecords, setFinanceRecords] = useState([]);
   const [menuForm, setMenuForm] = useState({
     name: "",
     price: "",
@@ -289,33 +257,6 @@ function App() {
       supabase.removeChannel(channel);
     };
   }, [isAuthenticated]);
-
-  useEffect(
-    () =>
-      window.localStorage.setItem(STORAGE_KEYS.menu, JSON.stringify(menuItems)),
-    [menuItems],
-  );
-  useEffect(
-    () =>
-      window.localStorage.setItem(
-        STORAGE_KEYS.moments,
-        JSON.stringify(momentItems),
-      ),
-    [momentItems],
-  );
-  useEffect(
-    () =>
-      window.localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(orders)),
-    [orders],
-  );
-  useEffect(
-    () =>
-      window.localStorage.setItem(
-        STORAGE_KEYS.finances,
-        JSON.stringify(financeRecords),
-      ),
-    [financeRecords],
-  );
 
   const financeSummary = useMemo(() => {
     const income = financeRecords
