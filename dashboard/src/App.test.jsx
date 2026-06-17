@@ -130,9 +130,18 @@ describe("Dashboard App", () => {
     fireEvent.click(screen.getByRole("button", { name: /tambah menu/i }));
 
     expect(screen.getByText(/Lotus Biscoff/i)).toBeInTheDocument();
-    expect(window.localStorage.getItem("yummyyumz-dashboard-menu")).toContain(
-      "Lotus Biscoff",
+  });
+
+  it("mengabaikan data lama di localStorage", async () => {
+    window.localStorage.setItem(
+      "yummyyumz-dashboard-menu",
+      JSON.stringify([{ id: 1, name: "Bolu Ketan Hitam", price: "Rp 85.000" }]),
     );
+
+    await login();
+    fireEvent.click(screen.getByRole("button", { name: /menu/i }));
+
+    expect(screen.queryByText(/Bolu Ketan Hitam/i)).not.toBeInTheDocument();
   });
 
   it("dapat menambahkan order baru", async () => {
@@ -151,9 +160,6 @@ describe("Dashboard App", () => {
     fireEvent.click(screen.getByRole("button", { name: /buat pesanan/i }));
 
     expect(screen.getByText(/Salsa/i)).toBeInTheDocument();
-    expect(window.localStorage.getItem("yummyyumz-dashboard-orders")).toContain(
-      "Salsa",
-    );
   });
 
   it("dapat menambahkan transaksi keuangan", async () => {
@@ -169,9 +175,6 @@ describe("Dashboard App", () => {
     fireEvent.click(screen.getByRole("button", { name: /tambah transaksi/i }));
 
     expect(screen.getByText(/Order Salsa/i)).toBeInTheDocument();
-    expect(
-      window.localStorage.getItem("yummyyumz-dashboard-finances"),
-    ).toContain("Order Salsa");
   });
 
   it("memanggil Supabase auth saat login", async () => {
