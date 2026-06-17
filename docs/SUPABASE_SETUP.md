@@ -18,11 +18,11 @@ VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-public-anon-key
 ```
 
-Untuk dashboard tambahkan:
+Dashboard memakai variabel yang sama. Login admin dilakukan lewat Supabase Auth
+(email + password), jadi tidak ada password yang di-hardcode di kode atau `.env`.
 
-```env
-VITE_ADMIN_PASSWORD=password-admin-anda
-```
+Buat akun admin di Supabase Dashboard > Authentication > Users > Add user
+(masukkan email dan password). Akun inilah yang dipakai untuk masuk ke dashboard.
 
 ## 2. SQL schema
 

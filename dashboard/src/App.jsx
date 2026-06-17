@@ -19,10 +19,7 @@ const STORAGE_KEYS = {
   moments: "yummyyumz-dashboard-moments",
   orders: "yummyyumz-dashboard-orders",
   finances: "yummyyumz-dashboard-finances",
-  auth: "yummyyumz-dashboard-auth",
 };
-
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || "yummyadmin";
 
 const todayLabel = new Intl.DateTimeFormat("id-ID", {
   weekday: "long",
@@ -56,7 +53,7 @@ const formatCurrency = (value) =>
   }).format(Number(value) || 0);
 
 const parseAmount = (value) => {
-  const match = String(value).match(/\d[\d\.]*/);
+  const match = String(value).match(/\d[\d.]*/);
   return match ? Number(match[0].replace(/[^0-9]/g, "")) || 0 : 0;
 };
 const getNumericPrice = (price) => parseAmount(price);
@@ -114,11 +111,13 @@ const toFinanceItem = (item) => ({
 });
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    () => window.localStorage.getItem(STORAGE_KEYS.auth) === "true",
-  );
+  const [session, setSession] = useState(null);
+  const [authChecked, setAuthChecked] = useState(() => !supabase);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const isAuthenticated = Boolean(session);
   const [activePanel, setActivePanel] = useState("overview");
   const [menuItems, setMenuItems] = useState(() =>
     readStoredData(STORAGE_KEYS.menu, initialMenuItems),
@@ -167,6 +166,29 @@ function App() {
       ? "Menghubungkan database..."
       : "Database belum terhubung",
   );
+
+  useEffect(() => {
+    if (!supabase) return;
+
+    let isMounted = true;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (!isMounted) return;
+      setSession(data.session);
+      setAuthChecked(true);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, nextSession) => {
+        setSession(nextSession);
+      },
+    );
+
+    return () => {
+      isMounted = false;
+      authListener?.subscription?.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     if (!isAuthenticated || !dashboardRemoteEnabled) return;
@@ -399,15 +421,34 @@ function App() {
     );
   };
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
-    if (password !== ADMIN_PASSWORD) {
-      setLoginError("Password admin salah. Coba lagi.");
+    if (!supabase) {
+      setLoginError(
+        "Database belum dikonfigurasi. Tambahkan VITE_SUPABASE_URL dan VITE_SUPABASE_ANON_KEY.",
+      );
       return;
     }
-    window.localStorage.setItem(STORAGE_KEYS.auth, "true");
-    setIsAuthenticated(true);
+    setIsLoggingIn(true);
     setLoginError("");
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    setIsLoggingIn(false);
+    if (error) {
+      setLoginError("Email atau password salah. Coba lagi.");
+      return;
+    }
+    setPassword("");
+    setLoginError("");
+  };
+
+  const handleLogout = async () => {
+    if (supabase) {
+      await supabase.auth.signOut();
+    }
+    setSession(null);
   };
 
   const addOrder = async (event) => {
@@ -636,17 +677,41 @@ function App() {
     ["reports", "▥", "Laporan"],
   ];
 
+  if (!authChecked) {
+    return (
+      <main className="login-shell">
+        <div className="login-card">
+          <p className="eyebrow">YummyYumz admin</p>
+          <h1>Memuat...</h1>
+        </div>
+      </main>
+    );
+  }
+
   if (!isAuthenticated) {
     return (
       <main className="login-shell">
         <form className="login-card" onSubmit={handleLogin}>
           <p className="eyebrow">YummyYumz admin</p>
           <h1>Masuk dashboard</h1>
-          <p>Masukkan password untuk mengakses dashboard order dan keuangan.</p>
+          <p>
+            Masukkan email dan password admin untuk mengakses dashboard order
+            dan keuangan.
+          </p>
+          <label htmlFor="admin-email">Email admin</label>
+          <input
+            id="admin-email"
+            type="email"
+            autoComplete="username"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            placeholder="email@yummyyumz.com"
+          />
           <label htmlFor="admin-password">Password admin</label>
           <input
             id="admin-password"
             type="password"
+            autoComplete="current-password"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             placeholder="Masukkan password"
@@ -654,7 +719,9 @@ function App() {
           {loginError ? (
             <strong className="login-error">{loginError}</strong>
           ) : null}
-          <button type="submit">Masuk</button>
+          <button type="submit" disabled={isLoggingIn}>
+            {isLoggingIn ? "Memproses..." : "Masuk"}
+          </button>
         </form>
       </main>
     );
@@ -1272,10 +1339,7 @@ function App() {
           <button
             type="button"
             className="logout-floating"
-            onClick={() => {
-              window.localStorage.removeItem(STORAGE_KEYS.auth);
-              setIsAuthenticated(false);
-            }}
+            onClick={handleLogout}
           >
             Keluar
           </button>

@@ -58,7 +58,7 @@ export default function Navbar() {
     }, 700);
   };
 
-  const handleDashboardOpen = () => {
+  const handleLoginOpen = () => {
     if (isMobileMenuOpen) setIsMobileMenuOpen(false);
     window.location.href = dashboardUrl;
   };
@@ -99,12 +99,12 @@ export default function Navbar() {
             </button>
             <button
               type="button"
-              onClick={handleDashboardOpen}
+              onClick={handleLoginOpen}
               data-cursor-hover
               className="hidden md:flex bg-gradient-to-br from-bakeryBerry to-bakeryPeach border-3 border-white px-6 h-12 items-center justify-center rounded-lg shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 ease-out"
             >
               <span className="font-body font-bold text-sm text-white uppercase">
-                Dashboard
+                Login
               </span>
             </button>
             <button
@@ -179,11 +179,11 @@ export default function Navbar() {
             <div className="overflow-hidden">
               <button
                 ref={addToRefs}
-                onClick={handleDashboardOpen}
+                onClick={handleLoginOpen}
                 data-cursor-hover
                 className="font-display font-bold text-[clamp(2rem,13vw,4rem)] md:text-7xl uppercase text-left text-white hover:text-bakeryBg transition-all duration-500 ease-out leading-[1.1] tracking-tight hover:scale-105 transform origin-left"
               >
-                DASHBOARD
+                LOGIN
               </button>
             </div>
           </div>
