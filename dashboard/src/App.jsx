@@ -19,13 +19,6 @@ import {
 } from "./services/accounts";
 import { supabase } from "./lib/supabase";
 
-const STORAGE_KEYS = {
-  menu: "yummyyumz-dashboard-menu",
-  moments: "yummyyumz-dashboard-moments",
-  orders: "yummyyumz-dashboard-orders",
-  finances: "yummyyumz-dashboard-finances",
-};
-
 const todayLabel = new Intl.DateTimeFormat("id-ID", {
   weekday: "long",
   day: "numeric",
@@ -33,6 +26,7 @@ const todayLabel = new Intl.DateTimeFormat("id-ID", {
   year: "numeric",
 }).format(new Date());
 
+<<<<<<< HEAD
 const initialMenuItems = [];
 
 const initialMomentItems = [];
@@ -53,6 +47,10 @@ const readStoredData = (key, fallback) => {
 const formatCurrency = (value) => {
   const num = Math.round(Number(value) || 0);
   return new Intl.NumberFormat("id-ID", {
+=======
+const formatCurrency = (value) =>
+  new Intl.NumberFormat("id-ID", {
+>>>>>>> 48ae3eda2c8b8b53a387cc2334bfdb3c092661e7
     style: "currency",
     currency: "IDR",
     maximumFractionDigits: 0,
@@ -150,18 +148,10 @@ function App() {
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
   const isAdmin = currentRole === "admin";
   const [activePanel, setActivePanel] = useState("overview");
-  const [menuItems, setMenuItems] = useState(() =>
-    readStoredData(STORAGE_KEYS.menu, initialMenuItems),
-  );
-  const [momentItems, setMomentItems] = useState(() =>
-    readStoredData(STORAGE_KEYS.moments, initialMomentItems),
-  );
-  const [orders, setOrders] = useState(() =>
-    readStoredData(STORAGE_KEYS.orders, initialOrders),
-  );
-  const [financeRecords, setFinanceRecords] = useState(() =>
-    readStoredData(STORAGE_KEYS.finances, initialFinanceRecords),
-  );
+  const [menuItems, setMenuItems] = useState([]);
+  const [momentItems, setMomentItems] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [financeRecords, setFinanceRecords] = useState([]);
   const [menuForm, setMenuForm] = useState({
     name: "",
     price: "",
@@ -320,33 +310,6 @@ function App() {
       supabase.removeChannel(channel);
     };
   }, [isAuthenticated]);
-
-  useEffect(
-    () =>
-      window.localStorage.setItem(STORAGE_KEYS.menu, JSON.stringify(menuItems)),
-    [menuItems],
-  );
-  useEffect(
-    () =>
-      window.localStorage.setItem(
-        STORAGE_KEYS.moments,
-        JSON.stringify(momentItems),
-      ),
-    [momentItems],
-  );
-  useEffect(
-    () =>
-      window.localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(orders)),
-    [orders],
-  );
-  useEffect(
-    () =>
-      window.localStorage.setItem(
-        STORAGE_KEYS.finances,
-        JSON.stringify(financeRecords),
-      ),
-    [financeRecords],
-  );
 
   const financeSummary = useMemo(() => {
     const income = financeRecords
